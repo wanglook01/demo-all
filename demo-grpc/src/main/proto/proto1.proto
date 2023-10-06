@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package protocol;
+
+option go_package = "protocol";
+option java_package = "com.google.protocol";
+option java_outer_classname = "PersonProtobuf";
+
+message Person {
+  string name = 1;
+  int32 size = 2;
+  string desc = 3;
+}
