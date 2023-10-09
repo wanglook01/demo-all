@@ -1,4 +1,4 @@
-package com.wanglook01;
+package com.wanglook01.protobuf;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protocol.PersonProtobuf;
