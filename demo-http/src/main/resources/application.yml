@@ -1,0 +1,19 @@
+server:
+  port: 8082
+  http2:
+    enabled: true
+  ssl:
+    enabled: true
+    key-store: classpath:keystore.p12
+    key-store-password: wang123
+    key-store-type: PKCS12
+    protocol: TLSv1.2
+    key-alias: undertow
+
+  compression:
+    enabled: true
+  undertow:
+    threads:
+      worker: 4
+      io: 10
+
