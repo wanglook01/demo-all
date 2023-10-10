@@ -4,7 +4,7 @@ server:
     enabled: true
   ssl:
     enabled: true
-    key-store: classpath:keystore.p12
+    key-store: classpath:your_keystore.p12
     key-store-password: wang123
     key-store-type: PKCS12
     protocol: TLSv1.2
