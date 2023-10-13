@@ -1,0 +1,12 @@
+server:
+  port: 8080
+spring:
+  graphql:
+    schema:
+      locations: classpath:graphql
+      file-extensions: .graphqls,.graphql,.gqls
+      printer:
+        enabled: true
+    graphiql:
+      enabled: true
+      path: /graphiql
