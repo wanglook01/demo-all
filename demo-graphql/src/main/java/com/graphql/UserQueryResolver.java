@@ -1,20 +1,14 @@
 package com.graphql;
 
-import graphql.annotations.annotationTypes.GraphQLField;
-import graphql.annotations.annotationTypes.GraphQLNonNull;
-import graphql.kickstart.annotations.GraphQLQueryResolver;
-import org.springframework.stereotype.Controller;
+import graphql.kickstart.tools.GraphQLQueryResolver;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
 
-@Controller
-@GraphQLQueryResolver
-public class UserController {
+@Component
+public class UserQueryResolver implements GraphQLQueryResolver {
 
-
-    @GraphQLField
-    @GraphQLNonNull
     public List<User> userList() {
         User user1 = new User();
         user1.setId(100);
@@ -28,6 +22,10 @@ public class UserController {
         user2.setNickname("小王");
         user2.setCity(User.City.shanghai);
         return Arrays.asList(user1, user2);
+    }
+
+    public String hello() {
+        return "hello";
     }
 
 
