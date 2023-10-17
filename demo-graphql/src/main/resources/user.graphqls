@@ -7,17 +7,38 @@ type User{
     nickname:String!
     # city 字段,类型是 City 枚举
     city:City
+    # 朋友
+    friends:[User]
+}
+
+type UserDTO{
+    # id,类型就是 ID ,! 表示是必填字段
+    id:ID!
+    # username 字段,String 类型
+    username:String!
+    # 读过的文章
+    articles:[Article]
+}
+
+type Article{
+    # id,类型就是 ID ,! 表示是必填字段
+    id:ID!
+    # username 字段,String 类型
+    text:String!
 }
 
 # City 枚举值
 enum City{
     hangzhou
     shanghai
+    shenzhen
+    chengdu
 }
 
 # 查询相关接口
 type Query{
     # 获取用户列表，返回 user 数组
     userList:[User!]
-    hello: String
+    getUser(id:ID!):User!
+    getUsersAndArticles:[UserDTO]
 }
