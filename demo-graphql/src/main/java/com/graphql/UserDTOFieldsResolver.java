@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class ArticleResolver implements GraphQLResolver<UserDTO> {
+public class UserDTOFieldsResolver implements GraphQLResolver<UserDTO> {
 
     public static Map<Integer, Article> articleMap = new HashMap<>();
 
@@ -28,6 +28,10 @@ public class ArticleResolver implements GraphQLResolver<UserDTO> {
         articleMap.put(6, new Article(6, "高等数学"));
     }
 
+    /**
+     * 必须是get+属性名的格式
+     * 后端的工作量确实增大好多
+     */
     public List<Article> getArticles(UserDTO userDTO) throws Exception {
         log.info("getArticles,userId:{}", userDTO.getId());
         Thread.sleep(5000);
