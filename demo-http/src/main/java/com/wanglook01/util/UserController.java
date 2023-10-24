@@ -1,4 +1,4 @@
-package com.wanglook01.controller;
+package com.wanglook01.util;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;

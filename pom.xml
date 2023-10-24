@@ -8,6 +8,7 @@
         <module>demo-http</module>
         <module>demo-client</module>
         <module>demo-graphql</module>
+        <module>demo-cpu</module>
     </modules>
     <groupId>com.wanglook01</groupId>
     <artifactId>demo-all</artifactId>
