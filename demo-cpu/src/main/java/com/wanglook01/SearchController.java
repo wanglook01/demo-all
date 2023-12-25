@@ -1,7 +1,9 @@
 package com.wanglook01;
 
 import com.wanglook01.dto.SuSkuInfoResDTO;
+import com.wanglook01.util.AESUtil;
 import com.wanglook01.util.BeanUtil;
+import com.wanglook01.util.JsonUtil;
 import com.wanglook01.util.SkuFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +25,9 @@ public class SearchController {
             skuList.add(SkuFactory.generateOneSkuWith2Ssu());
         }
         //筛选给前端吐出的字段
-        return skuList.stream().map(BeanUtil::filtrateNeedFields).collect(Collectors.toList());
+        List<SuSkuInfoResDTO> collect = skuList.stream().map(BeanUtil::filtrateNeedFields).collect(Collectors.toList());
+        return AESUtil.encrypt(JsonUtil.writeValueAsString(collect));
     }
+
+
 }

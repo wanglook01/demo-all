@@ -9,6 +9,8 @@
         <module>demo-client</module>
         <module>demo-graphql</module>
         <module>demo-cpu</module>
+        <module>demo-proxy</module>
+        <module>demo-fc</module>
     </modules>
     <groupId>com.wanglook01</groupId>
     <artifactId>demo-all</artifactId>
