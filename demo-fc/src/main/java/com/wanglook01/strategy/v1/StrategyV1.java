@@ -1,9 +1,10 @@
-package com.wanglook01.strategyv1;
+package com.wanglook01.strategy.v1;
 
 import com.google.common.collect.Lists;
 import com.wanglook01.dto.D3Data;
 import com.wanglook01.service.D3DataService;
 import com.wanglook01.util.DateUtil;
+import com.wanglook01.util.ExcelUtil;
 import com.wanglook01.util.MathUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,7 +58,7 @@ public class StrategyV1 {
             log.info("hitGe2,forecastNumCount:{},percent:{}", forecastNumCount, percent);
         }
         //间隔频率，大于等于2的数据中间隔了多少期
-
+        ExcelUtil.writeSimpleData(dtoList, "strategy1.xlsx");
 
     }
 

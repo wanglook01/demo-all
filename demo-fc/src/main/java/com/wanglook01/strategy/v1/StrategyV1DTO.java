@@ -1,4 +1,4 @@
-package com.wanglook01.strategyv1;
+package com.wanglook01.strategy.v1;
 
 import lombok.Data;
 

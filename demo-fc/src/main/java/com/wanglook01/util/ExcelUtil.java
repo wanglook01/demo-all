@@ -5,20 +5,23 @@ import com.google.common.collect.Lists;
 import com.wanglook01.dto.D3Data;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ExcelUtil {
 
+    private static final String D3_HISTORY_FILE = "history1.xlsx";
+
 
     /**
      * 最终定位到的是target下的目录而不是源码中的目录
      */
     @SuppressWarnings("all")
-    private static String getFilePath() {
+    private static String getFilePath(String fileName) {
         URL resource = ExcelUtil.class.getClassLoader().getResource("");
-        return resource.getPath() + "/excel/history1.xlsx";
+        return resource.getPath() + "/excel/" + fileName;
     }
 
     /**
@@ -28,7 +31,7 @@ public class ExcelUtil {
     public static List<D3Data> readD3Data() {
         D3DataExcelListener listener = new D3DataExcelListener();
         // 读取全部sheet
-        EasyExcel.read(getFilePath(), D3Data.class, listener).doReadAll();
+        EasyExcel.read(getFilePath(D3_HISTORY_FILE), D3Data.class, listener).doReadAll();
         //整理成需要的格式
         return listener.getCachedDataList();
     }
@@ -38,7 +41,7 @@ public class ExcelUtil {
      */
     @SuppressWarnings("all")
     public static void writeD3Data(List<D3Data> dataList) {
-        String filePath = getFilePath();
+        String filePath = getFilePath(D3_HISTORY_FILE);
         //写入之前先清空
         File file = new File(filePath);
         if (file.exists()) {
@@ -86,6 +89,45 @@ public class ExcelUtil {
         list.add(head6);
         list.add(head7);
         return list;
+    }
+
+    @SuppressWarnings("all")
+    public static <T> void writeSimpleData(List<T> dataList, String fileName) {
+        try {
+            String filePath = getFilePath(fileName);
+            //写入之前先清空
+            File file = new File(filePath);
+            if (file.exists()) {
+                file.delete();
+            }
+            //生成head
+            List<List<String>> head = new ArrayList<>();
+            T t = dataList.get(0);
+            Field[] declaredFields = t.getClass().getDeclaredFields();
+            for (Field field : declaredFields) {
+                head.add(Lists.newArrayList(field.getName()));
+            }
+            //生成行记录
+            List<List<Object>> excelDataList = new ArrayList<>();
+            for (T row : dataList) {
+                List<Object> rowRow = Lists.newArrayList();
+                for (Field field : declaredFields) {
+                    field.setAccessible(true);
+                    Object column = field.get(row);
+                    if (column == null) {
+                        rowRow.add("");
+                    } else if (column instanceof List) {
+                        rowRow.add(column.toString());
+                    } else {
+                        rowRow.add(column);
+                    }
+                }
+                excelDataList.add(rowRow);
+            }
+            EasyExcel.write(filePath).head(head).sheet("data").doWrite(excelDataList);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @SuppressWarnings("all")
