@@ -21,9 +21,8 @@ public class StrategyV1 {
     public static void main(String[] args) {
         List<D3Data> dataList = D3DataService.get();
         List<Integer> dateList = dataList.stream().map(D3Data::getDate).collect(Collectors.toList());
-        //格式：日期-经过计算得到的可能的数字的个数-命中中奖的数字的个数
+        //格式：日期-经过计算得到的可能的数字的个数-命中中奖的数字的个数,最前面的2个日期是没有的从2开始
         List<StrategyV1DTO> dtoList = new ArrayList<>();
-        //从2开始
         for (int i = 2; i < dateList.size(); i++) {
             Integer date = dateList.get(i);
             D3Data cur = dataList.stream().filter(x -> x.getDate().equals(date)).findFirst().orElse(null);
@@ -38,7 +37,7 @@ public class StrategyV1 {
             dtoList.add(dto);
         }
         fillGe2Interval(dtoList);
-        //按照这种算法,计算命中2个的频率，70%，说明有效
+        //统计算法的胜率，按照这种算法,计算命中2个的频率，70%，说明有效
         double hit0Ratio = MathUtil.percent(MathUtil.div4(dtoList.stream().filter(x -> x.getHitCount() == 0).count(), dtoList.size()));
         double hit1Ratio = MathUtil.percent(MathUtil.div4(dtoList.stream().filter(x -> x.getHitCount() == 1).count(), dtoList.size()));
         double hit2Ratio = MathUtil.percent(MathUtil.div4(dtoList.stream().filter(x -> x.getHitCount() == 2).count(), dtoList.size()));
