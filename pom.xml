@@ -10,6 +10,7 @@
         <module>demo-graphql</module>
         <module>demo-cpu</module>
         <module>demo-proxy</module>
+        <module>demo-es</module>
     </modules>
     <groupId>com.wanglook01</groupId>
     <artifactId>demo-all</artifactId>
@@ -18,11 +19,18 @@
     <properties>
         <java.version>1.8</java.version>
     </properties>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.16</version>
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
+
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>2.7.16</version> <!-- 更新至最新稳定版 -->
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>
