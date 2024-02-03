@@ -20,6 +20,7 @@ import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.stereotype.Service;
 
@@ -123,8 +124,30 @@ public class SkuService {
                 return this.match(queryDTO);
             case "multiMatch":
                 return this.multiMatch(queryDTO);
+            case "bool":
+                return this.bool(queryDTO);
             default:
                 return ResponseResult.error("action异常");
+        }
+    }
+
+    public ResponseResult bool(ProductQueryDTO queryDTO) {
+        try {
+            //
+            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
+            BoolQueryBuilder bb = QueryBuilders.boolQuery().must(QueryBuilders.termQuery("brand", queryDTO.getBrand()))
+                    .must(QueryBuilders.rangeQuery("price").gte(queryDTO.getMinPrice()));
+            if (queryDTO.getSkuName() != null && !queryDTO.getSkuName().isEmpty()) {
+                bb.should(QueryBuilders.matchQuery("skuName", queryDTO.getSkuName())).minimumShouldMatch(1);
+            }
+            searchRequest.source().query(bb);
+            // 执行查询
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+
+            // 处理响应
+            return ResponseResult.success(searchResponse.getHits());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
