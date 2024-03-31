@@ -22,6 +22,8 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -118,6 +120,8 @@ public class SkuService {
         switch (queryDTO.getAction()) {
             case "term":
                 return this.term(queryDTO);
+            case "terms":
+                return this.terms(queryDTO);
             case "range":
                 return this.range(queryDTO);
             case "match":
@@ -126,6 +130,14 @@ public class SkuService {
                 return this.multiMatch(queryDTO);
             case "bool":
                 return this.bool(queryDTO);
+            case "filter":
+                return this.filter(queryDTO);
+            case "sort":
+                return this.sort(queryDTO);
+            case "searchAfter":
+                return this.searchAfter(queryDTO);
+            case "highlight":
+                return this.highlight(queryDTO);
             default:
                 return ResponseResult.error("action异常");
         }
@@ -217,6 +229,20 @@ public class SkuService {
         }
     }
 
+    public ResponseResult terms(ProductQueryDTO queryDTO) {
+        try {
+            //
+            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
+            searchRequest.source().query(QueryBuilders.termsQuery("brand", queryDTO.getBrand(), queryDTO.getSkuName()));
+            // 执行查询
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            // 处理响应
+            return ResponseResult.success(searchResponse.getHits());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public ResponseResult matchAll(ProductQueryDTO queryDTO) {
         //
         try {
@@ -234,4 +260,69 @@ public class SkuService {
         }
     }
 
+
+    public ResponseResult filter(ProductQueryDTO queryDTO) {
+        try {
+            //
+            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
+            BoolQueryBuilder must = QueryBuilders.boolQuery()
+                    .must(QueryBuilders.termQuery("brand", "三只松鼠"))
+                    .must(QueryBuilders.matchQuery("skuName", "味"));
+            searchRequest.source().postFilter(must);
+            // 执行查询
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            // 处理响应
+            return ResponseResult.success(searchResponse.getHits());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ResponseResult sort(ProductQueryDTO queryDTO) {
+        try {
+            //
+            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
+            BoolQueryBuilder must = QueryBuilders.boolQuery()
+                    .must(QueryBuilders.termQuery("brand", "三只松鼠"));
+            searchRequest.source().query(must).sort("price", SortOrder.ASC).from(1).size(1);
+            // 执行查询
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            // 处理响应
+            return ResponseResult.success(searchResponse.getHits());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ResponseResult searchAfter(ProductQueryDTO queryDTO) {
+        try {
+            //
+            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
+            //
+            searchRequest.source().query(QueryBuilders.matchAllQuery()).sort("skuId", SortOrder.ASC).searchAfter(new Integer[]{queryDTO.getSkuId()}).size(3);
+            // 执行查询
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            // 处理响应
+            return ResponseResult.success(searchResponse.getHits());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ResponseResult highlight(ProductQueryDTO queryDTO) {
+        try {
+            //
+            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
+            //
+            searchRequest.source()
+                    .query(QueryBuilders.matchQuery("description", "4K超清家用投影仪"))
+                    .highlighter(new HighlightBuilder().field("description").preTags("<em>").postTags("</em>"));
+            // 执行查询
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            // 处理响应
+            return ResponseResult.success(searchResponse.getHits());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

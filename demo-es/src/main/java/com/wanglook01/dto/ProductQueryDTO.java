@@ -15,6 +15,8 @@ public class ProductQueryDTO {
 
     private String id;
 
+    private Integer skuId;
+
     // 商品名称
     private String skuName;
 
