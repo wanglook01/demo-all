@@ -2,8 +2,9 @@ package com.wanglook01.service;
 
 import com.wanglook01.constant.EsConstant;
 import com.wanglook01.constant.ResponseResult;
-import com.wanglook01.dto.ProductDTO;
 import com.wanglook01.dto.ProductQueryDTO;
+import com.wanglook01.dto.SkuDTO;
+import com.wanglook01.dto.SkuQueryDTO;
 import com.wanglook01.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.DocWriteResponse;
@@ -28,7 +29,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -38,9 +41,12 @@ public class SkuService {
     private RestHighLevelClient restHighLevelClient;
 
     //增删改查商品信息
-    public ResponseResult add(ProductDTO dto) {
-        //文档id不指定
-        IndexRequest request = new IndexRequest(EsConstant.INDEX_SKU).source(JsonUtil.toJson(dto), XContentType.JSON);
+    public ResponseResult add(SkuDTO dto) {
+        //指定文档id或者不指定均可
+        IndexRequest request = new IndexRequest()
+                .index(EsConstant.INDEX_SKU)
+                .id(dto.getSkuId().toString())
+                .source(JsonUtil.toJson(dto), XContentType.JSON);
         //执行插入操作
         try {
             IndexResponse response = restHighLevelClient.index(request, RequestOptions.DEFAULT);
@@ -57,11 +63,11 @@ public class SkuService {
     }
 
 
-    public ResponseResult addBatch(List<ProductDTO> dtoList) {
+    public ResponseResult addBatch(List<SkuDTO> dtoList) {
         //文档id和skuId相同
         BulkRequest bulkRequest = new BulkRequest();
-        for (ProductDTO dto : dtoList) {
-            bulkRequest.add(new IndexRequest(EsConstant.INDEX_SKU).source(JsonUtil.toJson(dto), XContentType.JSON));
+        for (SkuDTO dto : dtoList) {
+            bulkRequest.add(new IndexRequest(EsConstant.INDEX_SKU).id(dto.getSkuId().toString()).source(JsonUtil.toJson(dto), XContentType.JSON));
         }
         //执行插入操作
         try {
@@ -79,7 +85,7 @@ public class SkuService {
     }
 
 
-    public ResponseResult delete(ProductQueryDTO dto) {
+    public ResponseResult delete(SkuQueryDTO dto) {
         //指定文档id
         DeleteRequest request = new DeleteRequest(EsConstant.INDEX_SKU).id(dto.getId());
         //执行插入操作
@@ -97,9 +103,11 @@ public class SkuService {
         }
     }
 
-    public ResponseResult update(ProductDTO dto) {
+    public ResponseResult updateAll(SkuDTO dto) {
         //指定文档id
-        UpdateRequest request = new UpdateRequest(EsConstant.INDEX_SKU, dto.getId()).doc(JsonUtil.toJson(dto), XContentType.JSON);
+        String json = JsonUtil.toJson(dto);
+        log.info("Document json: {}", json);
+        UpdateRequest request = new UpdateRequest(EsConstant.INDEX_SKU, dto.getSkuId().toString()).doc(json, XContentType.JSON);
         //执行插入操作
         try {
             UpdateResponse response = restHighLevelClient.update(request, RequestOptions.DEFAULT);
@@ -108,221 +116,32 @@ public class SkuService {
             } else {
                 log.info("Failed to update the document");
             }
-            return ResponseResult.success(dto.getId());
+            return ResponseResult.success(dto.getSkuId());
         } catch (Exception e) {
             log.error("error", e);
             return ResponseResult.error("更新失败");
         }
     }
 
-
-    public ResponseResult search(ProductQueryDTO queryDTO) {
-        switch (queryDTO.getAction()) {
-            case "term":
-                return this.term(queryDTO);
-            case "terms":
-                return this.terms(queryDTO);
-            case "range":
-                return this.range(queryDTO);
-            case "match":
-                return this.match(queryDTO);
-            case "multiMatch":
-                return this.multiMatch(queryDTO);
-            case "bool":
-                return this.bool(queryDTO);
-            case "filter":
-                return this.filter(queryDTO);
-            case "sort":
-                return this.sort(queryDTO);
-            case "searchAfter":
-                return this.searchAfter(queryDTO);
-            case "highlight":
-                return this.highlight(queryDTO);
-            default:
-                return ResponseResult.error("action异常");
-        }
-    }
-
-    public ResponseResult bool(ProductQueryDTO queryDTO) {
+    public ResponseResult updateSingle(SkuDTO dto) {
+        Map<String, Object> fieldsToUpdate = new HashMap<>();
+        fieldsToUpdate.put("skuName", dto.getSkuName());
+        String json = JsonUtil.toJson(fieldsToUpdate);
+        log.info("Document json: {}", json);
+        //指定文档id
+        UpdateRequest request = new UpdateRequest(EsConstant.INDEX_SKU, dto.getSkuId().toString()).doc(json, XContentType.JSON);
+        //执行插入操作
         try {
-            //
-            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
-            BoolQueryBuilder bb = QueryBuilders.boolQuery().must(QueryBuilders.termQuery("brand", queryDTO.getBrand()))
-                    .must(QueryBuilders.rangeQuery("price").gte(queryDTO.getMinPrice()));
-            if (queryDTO.getSkuName() != null && !queryDTO.getSkuName().isEmpty()) {
-                bb.should(QueryBuilders.matchQuery("skuName", queryDTO.getSkuName())).minimumShouldMatch(1);
+            UpdateResponse response = restHighLevelClient.update(request, RequestOptions.DEFAULT);
+            if (response.getResult() == DocWriteResponse.Result.UPDATED) {
+                log.info("Document update successfully, ID: " + response.getId());
+            } else {
+                log.info("Failed to update the document");
             }
-            searchRequest.source().query(bb);
-            // 执行查询
-            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-
-            // 处理响应
-            return ResponseResult.success(searchResponse.getHits());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    public ResponseResult match(ProductQueryDTO queryDTO) {
-        try {
-            //
-            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
-            //searchRequest.source().query(QueryBuilders.matchQuery("brand", queryDTO.getBrand()).analyzer("ik_smart")).size(1000);
-            searchRequest.source().query(QueryBuilders.matchQuery("skuName", queryDTO.getSkuName()).analyzer("ik_smart")).size(1000);
-
-            // 执行查询
-            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-
-            // 处理响应
-            return ResponseResult.success(searchResponse.getHits());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public ResponseResult multiMatch(ProductQueryDTO queryDTO) {
-        try {
-            //
-            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
-            searchRequest.source().query(QueryBuilders.multiMatchQuery(queryDTO.getSkuName(), "skuName", "origin.farmName")).size(1000);
-
-            // 执行查询
-            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-
-            // 处理响应
-            return ResponseResult.success(searchResponse.getHits());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public ResponseResult range(ProductQueryDTO queryDTO) {
-        //
-        try {
-            //
-            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
-            searchRequest.source().query(QueryBuilders.rangeQuery("price").gte(queryDTO.getMinPrice()).lte(queryDTO.getMaxPrice()));
-
-            // 执行查询
-            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-
-            // 处理响应
-            return ResponseResult.success(searchResponse.getHits());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    //精准查询
-    public ResponseResult term(ProductQueryDTO queryDTO) {
-        try {
-            //
-            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
-            searchRequest.source().query(QueryBuilders.termQuery("brand", queryDTO.getBrand()));
-            // 执行查询
-            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-            // 处理响应
-            return ResponseResult.success(searchResponse.getHits());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public ResponseResult terms(ProductQueryDTO queryDTO) {
-        try {
-            //
-            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
-            searchRequest.source().query(QueryBuilders.termsQuery("brand", queryDTO.getBrand(), queryDTO.getSkuName()));
-            // 执行查询
-            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-            // 处理响应
-            return ResponseResult.success(searchResponse.getHits());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public ResponseResult matchAll(ProductQueryDTO queryDTO) {
-        //
-        try {
-            //
-            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
-            searchRequest.source().query(QueryBuilders.matchAllQuery().queryName("skuName")).size(1000);
-
-            // 执行查询
-            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-
-            // 处理响应
-            return ResponseResult.success(searchResponse.getHits());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    public ResponseResult filter(ProductQueryDTO queryDTO) {
-        try {
-            //
-            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
-            BoolQueryBuilder must = QueryBuilders.boolQuery()
-                    .must(QueryBuilders.termQuery("brand", "三只松鼠"))
-                    .must(QueryBuilders.matchQuery("skuName", "味"));
-            searchRequest.source().postFilter(must);
-            // 执行查询
-            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-            // 处理响应
-            return ResponseResult.success(searchResponse.getHits());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public ResponseResult sort(ProductQueryDTO queryDTO) {
-        try {
-            //
-            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
-            BoolQueryBuilder must = QueryBuilders.boolQuery()
-                    .must(QueryBuilders.termQuery("brand", "三只松鼠"));
-            searchRequest.source().query(must).sort("price", SortOrder.ASC).from(1).size(1);
-            // 执行查询
-            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-            // 处理响应
-            return ResponseResult.success(searchResponse.getHits());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public ResponseResult searchAfter(ProductQueryDTO queryDTO) {
-        try {
-            //
-            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
-            //
-            searchRequest.source().query(QueryBuilders.matchAllQuery()).sort("skuId", SortOrder.ASC).searchAfter(new Integer[]{queryDTO.getSkuId()}).size(3);
-            // 执行查询
-            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-            // 处理响应
-            return ResponseResult.success(searchResponse.getHits());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public ResponseResult highlight(ProductQueryDTO queryDTO) {
-        try {
-            //
-            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
-            //
-            searchRequest.source()
-                    .query(QueryBuilders.matchQuery("description", "4K超清家用投影仪"))
-                    .highlighter(new HighlightBuilder().field("description").preTags("<em>").postTags("</em>"));
-            // 执行查询
-            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-            // 处理响应
-            return ResponseResult.success(searchResponse.getHits());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            return ResponseResult.success(dto.getSkuId());
+        } catch (Exception e) {
+            log.error("error", e);
+            return ResponseResult.error("更新失败");
         }
     }
 }

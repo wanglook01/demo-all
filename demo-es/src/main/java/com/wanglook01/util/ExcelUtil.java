@@ -106,24 +106,16 @@ public class ExcelUtil {
                 "亚麻混纺休闲裤，透气舒适，时尚百搭潮流。",
                 "源自生态农场有机蔬菜，绿色健康，营养均衡全面。",
                 "户外防水智能运动手表，GPS定位，多项运动模式切换。",
-                "真皮耐磨旅行箱包，高品质拉链，超大容量，坚固耐用。",
-                "专业级公路自行车，轻量化设计，骑行顺畅省力。",
-                "慢回弹记忆棉枕头，全方位支撑颈部，助你安享深睡时光。",
-                "奢华女士淡香水，东方花香调，优雅气质自然流露。",
-                "名家手绘青花瓷茶具，古朴典雅，承载茶道文化魅力。",
-                "4K超清家用投影仪，色彩鲜艳，沉浸式观影体验。",
-                "氨基酸温和配方洗发水，深层清洁头皮，强韧秀发。",
-                "德国进口不锈钢厨刀套装，刃口锋利，轻松驾驭各类食材切割。",
-                "商品是一个很好的吃的，很好吃"
+                "美菜的西红柿和快驴的西红柿对比后哪一个更好呢"
         };
 
-        return productDescriptions[MathUtil.generateRandomBetween0And14()];
+        return productDescriptions[MathUtil.generateRandomBetween0And14() / 2];
     }
 
 
     public static void main(String[] args) {
         List<SkuExcelDTO> skuExcelDTOS = readFromXlsx("C:\\Users\\qingwa\\Downloads\\产品更新1-302.xlsx", SkuExcelDTO.class);
-        skuExcelDTOS = skuExcelDTOS.stream().limit(50).collect(Collectors.toList());
+        skuExcelDTOS = skuExcelDTOS.stream().limit(20).collect(Collectors.toList());
         List<ProductDTO> dtoList = new ArrayList<>();
         for (SkuExcelDTO sku : skuExcelDTOS) {
             ProductDTO dto = new ProductDTO();
