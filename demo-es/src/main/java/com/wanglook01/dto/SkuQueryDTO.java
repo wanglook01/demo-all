@@ -23,4 +23,6 @@ public class SkuQueryDTO {
     private String analyzer;
 
     private String description;
+
+    private String field;
 }
