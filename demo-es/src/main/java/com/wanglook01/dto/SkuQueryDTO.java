@@ -9,7 +9,7 @@ public class SkuQueryDTO {
 
     private String action;
 
-    private String actionNum;
+    private String actionDetail;
 
     private String id;
 

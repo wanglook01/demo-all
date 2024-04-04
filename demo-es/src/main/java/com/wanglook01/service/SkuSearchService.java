@@ -65,12 +65,17 @@ public class SkuSearchService {
                 return this.constantScoreQuery(queryDTO);
             case "functionScoreQuery":
                 return this.functionScoreQuery(queryDTO);
+            case "disMaxQuery":
+                return this.disMaxQuery(queryDTO);
+
+
+            case "sort":
+                return this.sort(queryDTO);
 
 
             case "filter":
                 return this.filter(queryDTO);
-            case "sort":
-                return this.sort(queryDTO);
+
             case "searchAfter":
                 return this.searchAfter(queryDTO);
             case "highlight":
@@ -282,22 +287,22 @@ public class SkuSearchService {
             SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
             //构建builder
             BoolQueryBuilder bb = null;
-            if (Objects.equals(queryDTO.getActionNum(), "must")) {
+            if (Objects.equals(queryDTO.getActionDetail(), "must")) {
                 bb = QueryBuilders.boolQuery()
                         .must(QueryBuilders.termQuery("brand", queryDTO.getBrand()))
                         .must(QueryBuilders.rangeQuery("price").gte(queryDTO.getMinPrice()).lte(queryDTO.getMaxPrice()));
-            } else if (Objects.equals(queryDTO.getActionNum(), "should")) {
+            } else if (Objects.equals(queryDTO.getActionDetail(), "should")) {
                 bb = QueryBuilders.boolQuery()
                         .should(QueryBuilders.termQuery("brand", queryDTO.getBrand()))
                         .should(QueryBuilders.rangeQuery("price").gte(queryDTO.getMinPrice()).lte(queryDTO.getMaxPrice()))
                         .minimumShouldMatch(2);
-            } else if (Objects.equals(queryDTO.getActionNum(), "mix")) {
+            } else if (Objects.equals(queryDTO.getActionDetail(), "mix")) {
                 bb = QueryBuilders.boolQuery()
                         .must(QueryBuilders.rangeQuery("price").gte(queryDTO.getMinPrice()).lte(queryDTO.getMaxPrice()))
                         .should(QueryBuilders.rangeQuery("stock").gte(queryDTO.getMinStock()).lte(queryDTO.getMaxStock()))
                         .should(QueryBuilders.termQuery("skuId", queryDTO.getSkuId()))
                         .minimumShouldMatch(1);
-            } else if (Objects.equals(queryDTO.getActionNum(), "filter")) {
+            } else if (Objects.equals(queryDTO.getActionDetail(), "filter")) {
                 bb = QueryBuilders.boolQuery()
                         .filter(QueryBuilders.rangeQuery("price").gte(queryDTO.getMinPrice()).lte(queryDTO.getMaxPrice()));
             }
@@ -383,6 +388,39 @@ public class SkuSearchService {
     }
 
 
+    public ResponseResult disMaxQuery(SkuQueryDTO queryDTO) {
+        try {
+            //基础查询
+            QueryBuilder queryBuilder = null;
+            switch (queryDTO.getActionDetail()) {
+                case "should":
+                    queryBuilder = QueryBuilders.boolQuery()
+                            .should(QueryBuilders.matchQuery("description", queryDTO.getDescription()).analyzer(queryDTO.getAnalyzer()))
+                            .should(QueryBuilders.matchQuery("skuName", queryDTO.getDescription()).analyzer(queryDTO.getAnalyzer()))
+                            .minimumShouldMatch(1);
+                    break;
+                case "dis":
+                    queryBuilder = QueryBuilders.disMaxQuery()
+                            .add(QueryBuilders.matchQuery("description", queryDTO.getDescription()).analyzer(queryDTO.getAnalyzer()))
+                            .add(QueryBuilders.matchQuery("skuName", queryDTO.getDescription()).analyzer(queryDTO.getAnalyzer()));
+                    break;
+                default:
+                    throw new RuntimeException("error");
+
+            }
+            //
+            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
+            searchRequest.searchType(SearchType.DFS_QUERY_THEN_FETCH).source().query(queryBuilder);
+            //
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            // 处理响应
+            return ResponseResult.success(searchResponse.getHits());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     public ResponseResult matchAll(SkuQueryDTO queryDTO) {
         //
         try {
@@ -422,9 +460,13 @@ public class SkuSearchService {
         try {
             //
             SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
-            BoolQueryBuilder must = QueryBuilders.boolQuery()
-                    .must(QueryBuilders.termQuery("brand", "三只松鼠"));
-            searchRequest.source().query(must).sort("price", SortOrder.ASC).from(1).size(1);
+            QueryBuilder match = QueryBuilders.matchQuery("description", queryDTO.getDescription());
+            if ("sort".equals(queryDTO.getActionDetail())) {
+                searchRequest.source().query(match).sort("price", SortOrder.DESC);
+            } else {
+                searchRequest.source().query(match);
+            }
+
             // 执行查询
             SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
             // 处理响应
