@@ -2,3 +2,7 @@
 elasticsearch:
   host: localhost
   port: 9200
+#logging:
+#  level:
+#    root: trace
+#    org.elasticsearch.client: debug

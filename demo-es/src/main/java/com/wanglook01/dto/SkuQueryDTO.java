@@ -2,10 +2,14 @@ package com.wanglook01.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class SkuQueryDTO {
 
     private String action;
+
+    private String actionNum;
 
     private String id;
 
@@ -18,6 +22,10 @@ public class SkuQueryDTO {
 
     private Integer maxPrice;
 
+    private Integer minStock;
+
+    private Integer maxStock;
+
     private String brand;
 
     private String analyzer;
@@ -25,4 +33,6 @@ public class SkuQueryDTO {
     private String description;
 
     private String field;
+
+    private List<String> ids;
 }

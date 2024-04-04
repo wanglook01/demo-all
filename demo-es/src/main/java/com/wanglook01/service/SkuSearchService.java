@@ -5,16 +5,21 @@ import com.wanglook01.constant.ResponseResult;
 import com.wanglook01.dto.SkuQueryDTO;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.common.lucene.search.function.CombineFunction;
+import org.elasticsearch.common.lucene.search.function.FunctionScoreQuery;
+import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
+import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.Objects;
 
 @Service
 public class SkuSearchService {
@@ -48,10 +53,20 @@ public class SkuSearchService {
                 return this.prefixQuery(queryDTO);
             case "wildcardQuery":
                 return this.wildcardQuery(queryDTO);
+            case "idsQuery":
+                return this.idsQuery(queryDTO);
 
 
-            case "bool":
-                return this.bool(queryDTO);
+            case "boolQuery":
+                return this.boolQuery(queryDTO);
+            case "boostingQuery":
+                return this.boostingQuery(queryDTO);
+            case "constantScoreQuery":
+                return this.constantScoreQuery(queryDTO);
+            case "functionScoreQuery":
+                return this.functionScoreQuery(queryDTO);
+
+
             case "filter":
                 return this.filter(queryDTO);
             case "sort":
@@ -233,20 +248,133 @@ public class SkuSearchService {
         }
     }
 
-
-    public ResponseResult bool(SkuQueryDTO queryDTO) {
+    public ResponseResult idsQuery(SkuQueryDTO queryDTO) {
         try {
-            //
             SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
-            BoolQueryBuilder bb = QueryBuilders.boolQuery().must(QueryBuilders.termQuery("brand", queryDTO.getBrand()))
-                    .must(QueryBuilders.rangeQuery("price").gte(queryDTO.getMinPrice()));
-            if (queryDTO.getSkuName() != null && !queryDTO.getSkuName().isEmpty()) {
-                bb.should(QueryBuilders.matchQuery("skuName", queryDTO.getSkuName())).minimumShouldMatch(1);
+            searchRequest.source().query(QueryBuilders.idsQuery().addIds(queryDTO.getIds().toArray(new String[]{})));
+            // 执行查询
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            // 处理响应
+            return ResponseResult.success(searchResponse.getHits());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    /**
+     * {
+     * "action": "boolQuery",
+     * "actionNum":"mix",
+     * "brand": "绿叶农业",
+     * "minPrice": 1,
+     * "maxPrice":20,
+     * "minStock": 3001,
+     * "maxStock":500,
+     * "skuId":1001
+     * }
+     *
+     * @param queryDTO
+     * @return
+     */
+    public ResponseResult boolQuery(SkuQueryDTO queryDTO) {
+        try {
+            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
+            //构建builder
+            BoolQueryBuilder bb = null;
+            if (Objects.equals(queryDTO.getActionNum(), "must")) {
+                bb = QueryBuilders.boolQuery()
+                        .must(QueryBuilders.termQuery("brand", queryDTO.getBrand()))
+                        .must(QueryBuilders.rangeQuery("price").gte(queryDTO.getMinPrice()).lte(queryDTO.getMaxPrice()));
+            } else if (Objects.equals(queryDTO.getActionNum(), "should")) {
+                bb = QueryBuilders.boolQuery()
+                        .should(QueryBuilders.termQuery("brand", queryDTO.getBrand()))
+                        .should(QueryBuilders.rangeQuery("price").gte(queryDTO.getMinPrice()).lte(queryDTO.getMaxPrice()))
+                        .minimumShouldMatch(2);
+            } else if (Objects.equals(queryDTO.getActionNum(), "mix")) {
+                bb = QueryBuilders.boolQuery()
+                        .must(QueryBuilders.rangeQuery("price").gte(queryDTO.getMinPrice()).lte(queryDTO.getMaxPrice()))
+                        .should(QueryBuilders.rangeQuery("stock").gte(queryDTO.getMinStock()).lte(queryDTO.getMaxStock()))
+                        .should(QueryBuilders.termQuery("skuId", queryDTO.getSkuId()))
+                        .minimumShouldMatch(1);
+            } else if (Objects.equals(queryDTO.getActionNum(), "filter")) {
+                bb = QueryBuilders.boolQuery()
+                        .filter(QueryBuilders.rangeQuery("price").gte(queryDTO.getMinPrice()).lte(queryDTO.getMaxPrice()));
             }
             searchRequest.source().query(bb);
             // 执行查询
             SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
 
+            // 处理响应
+            return ResponseResult.success(searchResponse.getHits());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public ResponseResult boostingQuery(SkuQueryDTO queryDTO) {
+        try {
+            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
+            //构建builder
+            MatchQueryBuilder positive = QueryBuilders.matchQuery("description", queryDTO.getDescription());
+            RangeQueryBuilder negative = QueryBuilders.rangeQuery("price").gte(queryDTO.getMinPrice()).lte(queryDTO.getMaxPrice());
+            searchRequest.source().query(QueryBuilders.boostingQuery(positive, negative).negativeBoost(0.5f));
+            // 执行查询
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+
+            // 处理响应
+            return ResponseResult.success(searchResponse.getHits());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public ResponseResult constantScoreQuery(SkuQueryDTO queryDTO) {
+        try {
+            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
+            //构建builder
+            MatchQueryBuilder positive = QueryBuilders.matchQuery("description", queryDTO.getDescription());
+            searchRequest.source().query(QueryBuilders.constantScoreQuery(positive));
+            // 执行查询
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+
+            // 处理响应
+            return ResponseResult.success(searchResponse.getHits());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public ResponseResult functionScoreQuery(SkuQueryDTO queryDTO) {
+        try {
+            //基础查询
+            QueryBuilder queryBuilder = QueryBuilders.matchQuery("description", queryDTO.getDescription()).analyzer(queryDTO.getAnalyzer());
+            //打分1，随机值
+            /*FunctionScoreQueryBuilder.FilterFunctionBuilder[] functions = new FunctionScoreQueryBuilder.FilterFunctionBuilder[]{
+                    new FunctionScoreQueryBuilder.FilterFunctionBuilder(ScoreFunctionBuilders.randomFunction())};*/
+            //打分2，field_value_factor
+            /*FunctionScoreQueryBuilder.FilterFunctionBuilder[] functions = new FunctionScoreQueryBuilder.FilterFunctionBuilder[]{
+                    new FunctionScoreQueryBuilder.FilterFunctionBuilder(ScoreFunctionBuilders.fieldValueFactorFunction("price")
+                            .factor(2).modifier(FieldValueFactorFunction.Modifier.SQUARE))};*/
+            //打分3：衰减函数,为啥price就是不行呢？
+            FunctionScoreQueryBuilder.FilterFunctionBuilder[] functions = new FunctionScoreQueryBuilder.FilterFunctionBuilder[]{
+                    new FunctionScoreQueryBuilder.FilterFunctionBuilder(ScoreFunctionBuilders.linearDecayFunction("price", 25F, 100F, 2F))};
+            //打分4：
+            /*FunctionScoreQueryBuilder.FilterFunctionBuilder[] filterFunctionBuilders = new FunctionScoreQueryBuilder.FilterFunctionBuilder[2];
+            filterFunctionBuilders[0] = new FunctionScoreQueryBuilder.FilterFunctionBuilder(ScoreFunctionBuilders.randomFunction());
+            filterFunctionBuilders[1] = new FunctionScoreQueryBuilder.FilterFunctionBuilder(ScoreFunctionBuilders.weightFactorFunction(0.5F));*/
+            //
+            FunctionScoreQueryBuilder functionScoreQueryBuilder = QueryBuilders.functionScoreQuery(queryBuilder, functions)
+                    .scoreMode(FunctionScoreQuery.ScoreMode.SUM)
+                    .boostMode(CombineFunction.REPLACE);
+            //
+            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
+            searchRequest.searchType(SearchType.DFS_QUERY_THEN_FETCH).source().query(functionScoreQueryBuilder);
+            //
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
             // 处理响应
             return ResponseResult.success(searchResponse.getHits());
         } catch (IOException e) {
