@@ -5,17 +5,23 @@ import com.wanglook01.constant.ResponseResult;
 import com.wanglook01.dto.SkuQueryDTO;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchScrollRequest;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.lucene.search.function.CombineFunction;
 import org.elasticsearch.common.lucene.search.function.FunctionScoreQuery;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -71,13 +77,14 @@ public class SkuSearchService {
 
             case "sort":
                 return this.sort(queryDTO);
+            case "pageQuery":
+                return this.pageQuery(queryDTO);
 
 
             case "filter":
                 return this.filter(queryDTO);
 
-            case "searchAfter":
-                return this.searchAfter(queryDTO);
+
             case "highlight":
                 return this.highlight(queryDTO);
             default:
@@ -476,20 +483,59 @@ public class SkuSearchService {
         }
     }
 
-    public ResponseResult searchAfter(SkuQueryDTO queryDTO) {
+
+    public ResponseResult pageQuery(SkuQueryDTO queryDTO) {
         try {
-            //
-            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
-            //
-            searchRequest.source().query(QueryBuilders.matchAllQuery()).sort("skuId", SortOrder.ASC).searchAfter(new Integer[]{queryDTO.getSkuId()}).size(3);
+            SearchRequest searchRequest = new SearchRequest();
+            //分页1
+            switch (queryDTO.getActionDetail()) {
+                case "fromSize":
+                    int from = (queryDTO.getPageNo() - 1) * queryDTO.getPageSize();
+                    QueryBuilder match = QueryBuilders.matchQuery("description", queryDTO.getDescription()).analyzer(queryDTO.getAnalyzer());
+                    searchRequest.indices(EsConstant.INDEX_SKU)
+                            .source(SearchSourceBuilder.searchSource()
+                                    .query(match)
+                                    .from(from).size(queryDTO.getPageSize())
+                            );
+                    break;
+                case "searchAfter":
+                    QueryBuilder matchQuery = QueryBuilders.matchQuery("description", queryDTO.getDescription()).analyzer(queryDTO.getAnalyzer());
+                    SearchSourceBuilder sourceBuilder = SearchSourceBuilder.searchSource()
+                            .query(matchQuery)
+                            .sort(SortBuilders.fieldSort("price").order(SortOrder.DESC))
+                            .sort(SortBuilders.scoreSort().order(SortOrder.DESC))
+                            .from((queryDTO.getPageNo() - 1) * queryDTO.getPageSize())
+                            .size(queryDTO.getPageSize());
+                    if (!CollectionUtils.isEmpty(queryDTO.getSortValues())) {
+                        sourceBuilder.searchAfter(queryDTO.getSortValues().toArray(new Object[0]));
+                    }
+                    searchRequest.indices(EsConstant.INDEX_SKU).source(sourceBuilder);
+                    break;
+                case "scroll":
+                    QueryBuilder matchQuery2 = QueryBuilders.matchQuery("description", queryDTO.getDescription()).analyzer(queryDTO.getAnalyzer());
+                    searchRequest.indices(EsConstant.INDEX_SKU)
+                            .source(SearchSourceBuilder.searchSource().query(matchQuery2).size(queryDTO.getPageSize()))
+                            .scroll(TimeValue.MINUS_ONE);
+                    //如果有scrollId,这里单独处理了
+                    if(StringUtils.hasLength(queryDTO.getScrollId())){
+                        SearchScrollRequest searchScrollRequest = new SearchScrollRequest(queryDTO.getScrollId());
+                        searchScrollRequest.scroll(TimeValue.MINUS_ONE);
+                        SearchResponse searchResponse = restHighLevelClient.scroll(searchScrollRequest, RequestOptions.DEFAULT);
+                        return ResponseResult.success(searchResponse.getHits(), searchResponse.getScrollId());
+                    }
+                    break;
+                default:
+                    throw new RuntimeException("error");
+            }
             // 执行查询
             SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
             // 处理响应
-            return ResponseResult.success(searchResponse.getHits());
+            return ResponseResult.success(searchResponse.getHits(), searchResponse.getScrollId());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
 
     public ResponseResult highlight(SkuQueryDTO queryDTO) {
         try {

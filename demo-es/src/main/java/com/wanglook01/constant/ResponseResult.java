@@ -19,6 +19,14 @@ public class ResponseResult {
         return responseResult;
     }
 
+    public static ResponseResult success(Object data, String message) {
+        ResponseResult responseResult = new ResponseResult();
+        responseResult.setCode(1);
+        responseResult.setMessage(message);
+        responseResult.setData(data);
+        return responseResult;
+    }
+
     public static ResponseResult error(String message) {
         ResponseResult responseResult = new ResponseResult();
         responseResult.setCode(0);
