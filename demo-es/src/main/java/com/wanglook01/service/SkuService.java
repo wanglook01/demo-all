@@ -2,7 +2,6 @@ package com.wanglook01.service;
 
 import com.wanglook01.constant.EsConstant;
 import com.wanglook01.constant.ResponseResult;
-import com.wanglook01.dto.ProductQueryDTO;
 import com.wanglook01.dto.SkuDTO;
 import com.wanglook01.dto.SkuQueryDTO;
 import com.wanglook01.util.JsonUtil;
@@ -14,21 +13,14 @@ import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
-import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,9 +115,16 @@ public class SkuService {
         }
     }
 
+    @SuppressWarnings("all")
     public ResponseResult updateSingle(SkuDTO dto) {
+        Map map = JsonUtil.fromJson(JsonUtil.toJson(dto), Map.class);
+        //
         Map<String, Object> fieldsToUpdate = new HashMap<>();
-        fieldsToUpdate.put("skuName", dto.getSkuName());
+        map.forEach((k, v) -> {
+            if (v != null) {
+                fieldsToUpdate.put(k.toString(), v);
+            }
+        });
         String json = JsonUtil.toJson(fieldsToUpdate);
         log.info("Document json: {}", json);
         //指定文档id

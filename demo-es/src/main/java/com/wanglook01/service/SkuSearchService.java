@@ -95,7 +95,7 @@ public class SkuSearchService {
     public ResponseResult matchAllQuery(SkuQueryDTO queryDTO) {
         try {
             //
-            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
+            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU).searchType(SearchType.DFS_QUERY_THEN_FETCH);
             //这个会出现空指针，indices使用source()方法的时候，缺少SearchSourceBuilder对象，返回null，因此报NPE
             //searchRequest.indices(EsConstant.INDEX_SKU).source().query(QueryBuilders.matchAllQuery());
             searchRequest.source().query(QueryBuilders.matchAllQuery().boost(1.4F));
@@ -124,11 +124,22 @@ public class SkuSearchService {
         }
     }
 
+    /**
+     *
+     */
     public ResponseResult matchPhraseQuery(SkuQueryDTO queryDTO) {
         try {
             //
             SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SKU);
-            searchRequest.source().query(QueryBuilders.matchPhraseQuery("description", queryDTO.getDescription()).analyzer(queryDTO.getAnalyzer())).size(1000);
+            QueryBuilder queryBuilder;
+            if (queryDTO.getSlop() != null && queryDTO.getSlop() != 0) {
+                queryBuilder = QueryBuilders.matchPhraseQuery("description", queryDTO.getDescription())
+                        .analyzer(queryDTO.getAnalyzer()).slop(queryDTO.getSlop());
+            } else {
+                queryBuilder = QueryBuilders.matchPhraseQuery("description", queryDTO.getDescription())
+                        .analyzer(queryDTO.getAnalyzer());
+            }
+            searchRequest.source().query(queryBuilder).size(1000);
             // 执行查询
             SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
             // 处理响应
@@ -517,7 +528,7 @@ public class SkuSearchService {
                             .source(SearchSourceBuilder.searchSource().query(matchQuery2).size(queryDTO.getPageSize()))
                             .scroll(TimeValue.MINUS_ONE);
                     //如果有scrollId,这里单独处理了
-                    if(StringUtils.hasLength(queryDTO.getScrollId())){
+                    if (StringUtils.hasLength(queryDTO.getScrollId())) {
                         SearchScrollRequest searchScrollRequest = new SearchScrollRequest(queryDTO.getScrollId());
                         searchScrollRequest.scroll(TimeValue.MINUS_ONE);
                         SearchResponse searchResponse = restHighLevelClient.scroll(searchScrollRequest, RequestOptions.DEFAULT);

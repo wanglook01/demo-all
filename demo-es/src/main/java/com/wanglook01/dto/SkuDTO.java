@@ -33,7 +33,7 @@ public class SkuDTO {
     private WeightDTO weight;
 
     // 商品库存数量
-    private int stock;
+    private Integer stock;
 
     private Integer status;
 

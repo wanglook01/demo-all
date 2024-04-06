@@ -3,7 +3,6 @@ package com.wanglook01.dto;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Objects;
 
 @Data
 public class SkuQueryDTO {
@@ -32,6 +31,8 @@ public class SkuQueryDTO {
     private String analyzer;
 
     private String description;
+
+    private Integer slop;
 
     private String field;
 

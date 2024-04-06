@@ -1,7 +1,6 @@
 package com.wanglook01.controller;
 
 import com.wanglook01.constant.ResponseResult;
-import com.wanglook01.dto.ProductQueryDTO;
 import com.wanglook01.dto.SkuDTO;
 import com.wanglook01.dto.SkuQueryDTO;
 import com.wanglook01.service.SkuSearchService;
