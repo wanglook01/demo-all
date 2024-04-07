@@ -47,7 +47,6 @@ public class SkuController {
         return skuService.updateSingle(dto);
     }
 
-
     @RequestMapping("/search")
     public ResponseResult search(@RequestBody SkuQueryDTO queryDTO) {
         return skuSearchService.search(queryDTO);

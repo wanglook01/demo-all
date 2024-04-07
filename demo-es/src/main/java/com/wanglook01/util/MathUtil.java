@@ -19,4 +19,13 @@ public class MathUtil {
     public static int generateRandomBetween0And14() {
         return RANDOM.nextInt(15);
     }
+
+    public static int generateRandomBetween0And49() {
+        return RANDOM.nextInt(50);
+    }
+
+
+    public static int generateRandomBetween10000And99999() {
+        return RANDOM.nextInt(90000) + 10000; //nextInt(upperBound - lowerBound + 1) + lowerBound
+    }
 }
