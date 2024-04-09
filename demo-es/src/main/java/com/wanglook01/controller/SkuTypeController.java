@@ -2,7 +2,6 @@ package com.wanglook01.controller;
 
 import com.wanglook01.constant.EsConstant;
 import com.wanglook01.constant.ResponseResult;
-import com.wanglook01.dto.SkuQueryDTO;
 import com.wanglook01.dto.SkuTypeDTO;
 import com.wanglook01.util.ConstUtil;
 import com.wanglook01.util.JsonUtil;
@@ -10,19 +9,13 @@ import com.wanglook01.util.MathUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,23 +82,4 @@ public class SkuTypeController {
         return ResponseResult.success("success");
     }
 
-
-    @RequestMapping("/search")
-    public ResponseResult search(@RequestBody SkuQueryDTO queryDTO) {
-        try {
-            SearchRequest searchRequest = new SearchRequest(EsConstant.INDEX_SLOW_SKU);
-            //构建builder
-            BoolQueryBuilder bb = QueryBuilders.boolQuery()
-                    .must(QueryBuilders.matchQuery("skuName", queryDTO.getSkuName()))
-                    .must(QueryBuilders.rangeQuery("stock").gte(queryDTO.getMinStock()).lte(queryDTO.getMaxStock()));
-            searchRequest.source().query(bb);
-            // 执行查询
-            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-
-            // 处理响应
-            return ResponseResult.success(searchResponse.getHits());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
