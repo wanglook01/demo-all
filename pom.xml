@@ -11,6 +11,7 @@
         <module>demo-cpu</module>
         <module>demo-proxy</module>
         <module>demo-es</module>
+        <module>demo-interview</module>
     </modules>
     <groupId>com.wanglook01</groupId>
     <artifactId>demo-all</artifactId>
