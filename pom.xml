@@ -12,6 +12,12 @@
         <module>demo-proxy</module>
         <module>demo-es</module>
         <module>demo-interview</module>
+        <module>demo-ddd-domain</module>
+        <module>demo-ddd-application</module>
+        <module>demo-ddd-web</module>
+        <module>demo-ddd-infrastructure</module>
+        <module>demo-ddd-main</module>
+        <module>demo-ddd-interface</module>
     </modules>
     <groupId>com.wanglook01</groupId>
     <artifactId>demo-all</artifactId>
