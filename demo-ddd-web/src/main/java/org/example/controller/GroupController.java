@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.example.api.GroupApi;
 import org.example.dto.cmd.GroupCreateCmd;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
 import java.util.Collections;
 import java.util.Map;
 
@@ -17,7 +17,7 @@ import java.util.Map;
 @RequestMapping("/group")
 public class GroupController {
 
-    @Resource
+    @DubboReference
     private GroupApi groupApi;
 
 
@@ -27,7 +27,8 @@ public class GroupController {
      * @return
      */
     @PostMapping("/create")
-    public Map<String, Object> add(@RequestBody GroupCreateCmd createCmd) {
+    public Map<String, Object> create(@RequestBody GroupCreateCmd createCmd) {
+        log.info("create:{}", createCmd);
         Long groupId = groupApi.createGroup(createCmd);
         return Collections.singletonMap("groupId", groupId);
     }

@@ -3,8 +3,10 @@ package org.example.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class InvoiceConfigDTO {
+public class InvoiceConfigDTO implements Serializable {
 
     private Long id;
 

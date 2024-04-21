@@ -4,11 +4,12 @@ import lombok.Data;
 import org.example.dto.ContractDTO;
 import org.example.dto.InvoiceConfigDTO;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
 @Data
-public class GroupCreateCmd {
+public class GroupCreateCmd implements Serializable {
 
     /**
      * 企业名称
