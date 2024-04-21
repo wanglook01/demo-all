@@ -62,3 +62,17 @@ CREATE TABLE `t_group` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='客户组信息表';
 
 
+CREATE TABLE `t_operate_log` (
+ `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+ `target_id` bigint(20) NOT NULL COMMENT '客户id/门店id',
+ `operator_dimension` int(11) NOT NULL COMMENT '操作维度 1：客户 2：门店 3...',
+ `operator_type` int(11) NOT NULL COMMENT '操作类型 1：启用操作 2：停用操作  3：删除操作',
+ `operator_content` varchar(255) NOT NULL COMMENT '操作内容',
+ `operator_id` bigint(20) NOT NULL COMMENT '操作人uid',
+ `operator_name` varchar(255) NOT NULL COMMENT '操作人名称',
+ `c_t` bigint(20) NOT NULL COMMENT '创建时间',
+ `u_t` bigint(20) DEFAULT NULL COMMENT '修改时间',
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='操作日志表';
+
+

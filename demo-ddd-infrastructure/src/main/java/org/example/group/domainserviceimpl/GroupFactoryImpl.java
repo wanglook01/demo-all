@@ -1,6 +1,5 @@
 package org.example.group.domainserviceimpl;
 
-import org.example.DoInput;
 import org.example.aggregate.group.domainservice.GroupFactory;
 import org.example.aggregate.group.entity.AddressValObj;
 import org.example.aggregate.group.entity.ContractEntity;

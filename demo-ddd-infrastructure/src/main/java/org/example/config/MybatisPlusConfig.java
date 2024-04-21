@@ -4,7 +4,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@MapperScan("org.example.group.mapper")
+@MapperScan(value = {"org.example.group.mapper", "org.example.log.mapper"})
 public class MybatisPlusConfig {
 
 }

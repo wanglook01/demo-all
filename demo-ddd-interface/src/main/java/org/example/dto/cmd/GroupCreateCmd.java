@@ -102,4 +102,8 @@ public class GroupCreateCmd implements Serializable {
      * 发票信息
      */
     private List<InvoiceConfigDTO> invoiceConfigDTOList;
+
+    private Long operateId;
+
+    private String operateName;
 }

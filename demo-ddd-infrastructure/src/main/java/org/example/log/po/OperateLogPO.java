@@ -1,5 +1,7 @@
-package org.example.aggregate.log.entity;
+package org.example.log.po;
 
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 /**
@@ -7,10 +9,12 @@ import lombok.Data;
  * 之所以不作为值对象，是因为不需要每次都查询，且做更新
  */
 @Data
-public class OperateLogDO {
+@TableName("t_operate_log")
+public class OperateLogPO {
     /**
      * 主键id
      */
+    @TableId
     private Long id;
 
     /**

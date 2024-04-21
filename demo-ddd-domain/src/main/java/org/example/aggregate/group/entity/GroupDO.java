@@ -1,6 +1,7 @@
 package org.example.aggregate.group.entity;
 
 import lombok.Data;
+import org.example.aggregate.group.event.GroupCreateEvent;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -132,6 +133,18 @@ public class GroupDO {
             invoiceConfigEntity.setIsDeleted(1);
             invoiceConfigEntity.setUT(this.uT);
         }
+    }
+
+    public GroupCreateEvent getGroupCreateEvent(String topic, Long id, Long operateId, String operateName) {
+        GroupCreateEvent event = new GroupCreateEvent();
+        event.setTopic(topic);
+        event.setGroupId(id);
+        event.setOperatorContent("创建用户成功");
+        event.setOperatorType(1);
+        event.setOperatorDimension(1);
+        event.setOperatorId(operateId);
+        event.setOperatorName(operateName);
+        return event;
     }
 
 
