@@ -47,11 +47,6 @@ public class GroupRepositoryImpl implements GroupRepository {
     }
 
     @Override
-    public void delete(Long aLong) {
-
-    }
-
-    @Override
     public Long save(GroupDO entity) {
         GroupPO groupPO = groupConverter.group2Po(entity);
         List<ContractPO> contractPOList = entity.getContractList().stream().map(groupConverter::contract2Po).collect(Collectors.toList());

@@ -32,6 +32,7 @@ public class GroupApiImpl implements GroupApi {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Long updateGroup(GroupUpdateCmd updateCmd) {
         GroupDO groupDO = groupRepository.get(updateCmd.getId());
         groupDO.updateStatus(updateCmd.getStatus());
@@ -39,7 +40,10 @@ public class GroupApiImpl implements GroupApi {
     }
 
     @Override
-    public Integer deleteGroup(GroupDeleteCmd deleteCmd) {
-        return null;
+    @Transactional(rollbackFor = Exception.class)
+    public Long deleteGroup(GroupDeleteCmd deleteCmd) {
+        GroupDO groupDO = groupRepository.get(deleteCmd.getId());
+        groupDO.delete();
+        return groupRepository.save(groupDO);
     }
 }

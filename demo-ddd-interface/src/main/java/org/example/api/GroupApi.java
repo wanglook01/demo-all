@@ -11,7 +11,7 @@ public interface GroupApi {
     Long updateGroup(GroupUpdateCmd updateCmd);
 
 
-    Integer deleteGroup(GroupDeleteCmd deleteCmd);
+    Long deleteGroup(GroupDeleteCmd deleteCmd);
 
 
 }

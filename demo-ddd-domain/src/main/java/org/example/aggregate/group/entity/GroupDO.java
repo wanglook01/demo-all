@@ -120,4 +120,19 @@ public class GroupDO {
         this.uT = System.currentTimeMillis() / 1000;
     }
 
+
+    public void delete() {
+        this.isDeleted = 1;
+        this.uT = System.currentTimeMillis() / 1000;
+        for (ContractEntity contractEntity : this.contractList) {
+            contractEntity.setIsDeleted(1);
+            contractEntity.setUT(this.uT);
+        }
+        for (InvoiceConfigEntity invoiceConfigEntity : this.invoiceConfigList) {
+            invoiceConfigEntity.setIsDeleted(1);
+            invoiceConfigEntity.setUT(this.uT);
+        }
+    }
+
+
 }
