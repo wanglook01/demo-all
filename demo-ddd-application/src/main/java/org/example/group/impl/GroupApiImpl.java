@@ -2,15 +2,17 @@ package org.example.group.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
+import org.example.EventPublisher;
+import org.example.aggregate.group.domainservice.GroupDomainService;
 import org.example.aggregate.group.domainservice.GroupFactory;
 import org.example.aggregate.group.entity.GroupDO;
 import org.example.aggregate.group.event.GroupCreateEvent;
 import org.example.aggregate.group.repository.GroupRepository;
+import org.example.assembler.GroupAppConverter;
 import org.example.group.api.GroupApi;
 import org.example.group.dto.cmd.GroupCreateCmd;
 import org.example.group.dto.cmd.GroupDeleteCmd;
 import org.example.group.dto.cmd.GroupUpdateCmd;
-import org.example.EventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -28,6 +30,13 @@ public class GroupApiImpl implements GroupApi {
     @Resource
     private EventPublisher eventPublisher;
 
+    @Resource
+    private GroupDomainService groupDomainService;
+
+    @Resource
+    private GroupAppConverter groupAppConverter;
+
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long createGroup(GroupCreateCmd createCmd) {
@@ -43,7 +52,7 @@ public class GroupApiImpl implements GroupApi {
     @Transactional(rollbackFor = Exception.class)
     public Long updateGroup(GroupUpdateCmd updateCmd) {
         GroupDO groupDO = groupRepository.get(updateCmd.getId());
-        groupDO.updateStatus(updateCmd.getStatus());
+        groupDomainService.update(groupDO, groupAppConverter.convert(updateCmd));
         return groupRepository.save(groupDO);
     }
 

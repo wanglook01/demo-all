@@ -90,6 +90,9 @@ public class GroupRepositoryImpl implements GroupRepository {
 
     @Override
     public Integer count(String name) {
-        return null;
+        QueryWrapper<GroupPO> wrapper = new QueryWrapper<>();
+        wrapper.eq("name", name);
+        wrapper.eq("is_deleted", 0);
+        return groupMapper.selectCount(wrapper).intValue();
     }
 }

@@ -9,7 +9,9 @@ public class GroupUpdateCmd implements Serializable {
 
     private Long id;
 
-    private Integer status;
+    private String name;
+
+    private String phone;
 
 
 }

@@ -1,6 +1,7 @@
 package org.example.aggregate.group.entity;
 
 import lombok.Data;
+import org.example.aggregate.group.command.GroupEditCommand;
 import org.example.aggregate.group.event.GroupCreateEvent;
 
 import java.math.BigDecimal;
@@ -116,8 +117,9 @@ public class GroupDO {
     private List<InvoiceConfigEntity> invoiceConfigList;
 
 
-    public void updateStatus(Integer targetStatus) {
-        this.status = targetStatus;
+    public void update(GroupEditCommand command) {
+        this.name = command.getName();
+        this.phone = command.getPhone();
         this.uT = System.currentTimeMillis() / 1000;
     }
 
