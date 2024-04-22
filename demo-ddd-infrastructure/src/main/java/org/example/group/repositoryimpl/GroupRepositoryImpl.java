@@ -3,7 +3,7 @@ package org.example.group.repositoryimpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.example.aggregate.group.entity.GroupDO;
 import org.example.aggregate.group.repository.GroupRepository;
-import org.example.group.converter.GroupConverter;
+import org.example.group.converter.GroupInfraConverter;
 import org.example.group.mapper.ContractMapper;
 import org.example.group.mapper.GroupMapper;
 import org.example.group.mapper.InvoiceConfigMapper;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class GroupRepositoryImpl implements GroupRepository {
 
     @Resource
-    private GroupConverter groupConverter;
+    private GroupInfraConverter groupInfraConverter;
 
     @Resource
     private GroupMapper groupMapper;
@@ -43,14 +43,14 @@ public class GroupRepositoryImpl implements GroupRepository {
         wrapper2.eq("is_deleted", 0);
         List<InvoiceConfigPO> invoiceConfigPOS = invoiceConfigMapper.selectList(wrapper2);
         //转换器
-        return groupConverter.group2Do(groupPO, contractList, invoiceConfigPOS);
+        return groupInfraConverter.group2Do(groupPO, contractList, invoiceConfigPOS);
     }
 
     @Override
     public Long save(GroupDO entity) {
-        GroupPO groupPO = groupConverter.group2Po(entity);
-        List<ContractPO> contractPOList = entity.getContractList().stream().map(groupConverter::contract2Po).collect(Collectors.toList());
-        List<InvoiceConfigPO> invoiceConfigPOList = entity.getInvoiceConfigList().stream().map(groupConverter::invoiceConfig2Po).collect(Collectors.toList());
+        GroupPO groupPO = groupInfraConverter.group2Po(entity);
+        List<ContractPO> contractPOList = entity.getContractList().stream().map(groupInfraConverter::contract2Po).collect(Collectors.toList());
+        List<InvoiceConfigPO> invoiceConfigPOList = entity.getInvoiceConfigList().stream().map(groupInfraConverter::invoiceConfig2Po).collect(Collectors.toList());
         //插入或更新
         if (entity.getId() == null) {
             groupMapper.insert(groupPO);

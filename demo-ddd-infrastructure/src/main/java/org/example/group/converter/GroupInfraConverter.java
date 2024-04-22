@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 
 @Service
-public class GroupConverter {
+public class GroupInfraConverter {
 
     public GroupPO group2Po(GroupDO groupDO) {
         GroupPO groupPO = new GroupPO();
