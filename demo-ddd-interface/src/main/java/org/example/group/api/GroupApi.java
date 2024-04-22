@@ -1,8 +1,8 @@
-package org.example.api;
+package org.example.group.api;
 
-import org.example.dto.cmd.GroupCreateCmd;
-import org.example.dto.cmd.GroupDeleteCmd;
-import org.example.dto.cmd.GroupUpdateCmd;
+import org.example.group.dto.cmd.GroupCreateCmd;
+import org.example.group.dto.cmd.GroupDeleteCmd;
+import org.example.group.dto.cmd.GroupUpdateCmd;
 
 public interface GroupApi {
 

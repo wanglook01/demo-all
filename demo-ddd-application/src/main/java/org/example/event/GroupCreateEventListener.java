@@ -1,5 +1,6 @@
 package org.example.event;
 
+import org.example.EventListener;
 import org.example.aggregate.group.event.GroupCreateEvent;
 import org.example.aggregate.log.domainservice.OperateLogFactory;
 import org.example.aggregate.log.entity.OperateLogDO;

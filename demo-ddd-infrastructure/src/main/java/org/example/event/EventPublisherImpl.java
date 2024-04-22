@@ -1,6 +1,7 @@
 package org.example.event;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.EventPublisher;
 import org.example.MiEvent;
 import org.springframework.stereotype.Service;
 

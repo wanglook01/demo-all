@@ -1,4 +1,4 @@
-package org.example.impl;
+package org.example.group.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
@@ -6,11 +6,11 @@ import org.example.aggregate.group.domainservice.GroupFactory;
 import org.example.aggregate.group.entity.GroupDO;
 import org.example.aggregate.group.event.GroupCreateEvent;
 import org.example.aggregate.group.repository.GroupRepository;
-import org.example.api.GroupApi;
-import org.example.dto.cmd.GroupCreateCmd;
-import org.example.dto.cmd.GroupDeleteCmd;
-import org.example.dto.cmd.GroupUpdateCmd;
-import org.example.event.EventPublisher;
+import org.example.group.api.GroupApi;
+import org.example.group.dto.cmd.GroupCreateCmd;
+import org.example.group.dto.cmd.GroupDeleteCmd;
+import org.example.group.dto.cmd.GroupUpdateCmd;
+import org.example.EventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;

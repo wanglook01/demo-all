@@ -5,9 +5,9 @@ import org.example.aggregate.group.entity.AddressValObj;
 import org.example.aggregate.group.entity.ContractEntity;
 import org.example.aggregate.group.entity.GroupDO;
 import org.example.aggregate.group.entity.InvoiceConfigEntity;
-import org.example.dto.ContractDTO;
-import org.example.dto.InvoiceConfigDTO;
-import org.example.dto.cmd.GroupCreateCmd;
+import org.example.group.dto.ContractDTO;
+import org.example.group.dto.InvoiceConfigDTO;
+import org.example.group.dto.cmd.GroupCreateCmd;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 

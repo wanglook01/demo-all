@@ -2,10 +2,10 @@ package org.example.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
-import org.example.api.GroupApi;
-import org.example.dto.cmd.GroupCreateCmd;
-import org.example.dto.cmd.GroupDeleteCmd;
-import org.example.dto.cmd.GroupUpdateCmd;
+import org.example.group.api.GroupApi;
+import org.example.group.dto.cmd.GroupCreateCmd;
+import org.example.group.dto.cmd.GroupDeleteCmd;
+import org.example.group.dto.cmd.GroupUpdateCmd;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
