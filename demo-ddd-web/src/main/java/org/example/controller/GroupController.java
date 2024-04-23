@@ -2,17 +2,16 @@ package org.example.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.example.common.ResponseResult;
 import org.example.group.api.GroupApi;
-import org.example.group.dto.cmd.GroupCreateCmd;
-import org.example.group.dto.cmd.GroupDeleteCmd;
-import org.example.group.dto.cmd.GroupUpdateCmd;
+import org.example.group.api.GroupQueryApi;
+import org.example.group.cmd.GroupCreateCmd;
+import org.example.group.cmd.GroupUpdateCmd;
+import org.example.group.query.GroupPageQuery;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Collections;
-import java.util.Map;
 
 @RestController
 @Slf4j
@@ -22,36 +21,50 @@ public class GroupController {
     @DubboReference(retries = 0, timeout = 60000)
     private GroupApi groupApi;
 
+    @DubboReference(retries = 0, timeout = 60000)
+    private GroupQueryApi groupQueryApi;
 
     /**
-     * 客户管理 /客户列表 /创建客户
+     * 创建客户
      */
     @PostMapping("/create")
-    public Map<String, Object> create(@RequestBody GroupCreateCmd createCmd) {
-        log.info("create:{}", createCmd);
-        Long groupId = groupApi.createGroup(createCmd);
-        return Collections.singletonMap("groupId", groupId);
+    public ResponseResult<?> create(@RequestBody GroupCreateCmd createCmd) {
+        try {
+            log.info("create:{}", createCmd);
+            return groupApi.createGroup(createCmd);
+        } catch (Exception e) {
+            log.error("create,error", e);
+            return ResponseResult.failure(e.getMessage());
+        }
     }
 
     /**
-     * 修改客户状态
+     * 修改客户信息
      */
     @PostMapping("/update")
-    public Map<String, Object> update(@RequestBody GroupUpdateCmd updateCmd) {
-        log.info("updateCmd:{}", updateCmd);
-        Long groupId = groupApi.updateGroup(updateCmd);
-        return Collections.singletonMap("groupId", groupId);
+    public ResponseResult<?> update(@RequestBody GroupUpdateCmd updateCmd) {
+        try {
+            log.info("updateCmd:{}", updateCmd);
+            return groupApi.updateGroup(updateCmd);
+        } catch (Exception e) {
+            log.error("update,error", e);
+            return ResponseResult.failure(e.getMessage());
+        }
     }
 
 
     /**
      * 删除客户
      */
-    @PostMapping("/delete")
-    public Map<String, Object> delete(@RequestBody GroupDeleteCmd deleteCmd) {
-        log.info("deleteCmd:{}", deleteCmd);
-        Long groupId = groupApi.deleteGroup(deleteCmd);
-        return Collections.singletonMap("groupId", groupId);
+    @PostMapping("/getPage")
+    public ResponseResult<?> getPage(@RequestBody GroupPageQuery groupPageQuery) {
+        try {
+            log.info("groupPageQuery:{}", groupPageQuery);
+            return groupQueryApi.getPage(groupPageQuery);
+        } catch (Exception e) {
+            log.error("getPage,error", e);
+            return ResponseResult.failure(e.getMessage());
+        }
     }
 
 

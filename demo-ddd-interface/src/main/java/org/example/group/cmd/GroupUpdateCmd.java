@@ -1,4 +1,4 @@
-package org.example.group.dto.cmd;
+package org.example.group.cmd;
 
 import lombok.Data;
 

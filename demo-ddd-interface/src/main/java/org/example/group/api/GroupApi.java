@@ -1,17 +1,20 @@
 package org.example.group.api;
 
-import org.example.group.dto.cmd.GroupCreateCmd;
-import org.example.group.dto.cmd.GroupDeleteCmd;
-import org.example.group.dto.cmd.GroupUpdateCmd;
+import org.example.common.ResponseResult;
+import org.example.group.cmd.GroupCreateCmd;
+import org.example.group.cmd.GroupDeleteCmd;
+import org.example.group.cmd.GroupUpdateCmd;
 
 public interface GroupApi {
 
-    Long createGroup(GroupCreateCmd createCmd);
+    ResponseResult<Long> createGroup(GroupCreateCmd createCmd);
 
-    Long updateGroup(GroupUpdateCmd updateCmd);
+    ResponseResult<Long> updateGroup(GroupUpdateCmd updateCmd);
 
 
-    Long deleteGroup(GroupDeleteCmd deleteCmd);
+    ResponseResult<Long> deleteGroup(GroupDeleteCmd deleteCmd);
+
+
 
 
 }

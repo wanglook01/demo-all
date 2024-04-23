@@ -1,7 +1,7 @@
-package org.example.assembler;
+package org.example.converter;
 
 import org.example.aggregate.group.command.GroupEditCommand;
-import org.example.group.dto.cmd.GroupUpdateCmd;
+import org.example.group.cmd.GroupUpdateCmd;
 import org.springframework.stereotype.Service;
 
 @Service

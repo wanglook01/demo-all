@@ -1,8 +1,8 @@
-package org.example.group.dto.cmd;
+package org.example.group.cmd;
 
 import lombok.Data;
-import org.example.group.dto.ContractDTO;
-import org.example.group.dto.InvoiceConfigDTO;
+import org.example.group.common.ContractDTO;
+import org.example.group.common.InvoiceConfigDTO;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

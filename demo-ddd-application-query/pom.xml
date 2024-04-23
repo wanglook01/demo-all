@@ -10,46 +10,46 @@
     </parent>
 
     <groupId>org.example</groupId>
-    <artifactId>demo-ddd-infrastructure</artifactId>
+    <artifactId>demo-ddd-application-query</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <dubbo.version>3.2.0</dubbo.version>
     </properties>
+
 
     <dependencies>
         <dependency>
-            <groupId>org.example</groupId>
-            <artifactId>demo-ddd-domain</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jdbc</artifactId>
         </dependency>
         <dependency>
             <groupId>org.example</groupId>
-            <artifactId>demo-ddd-application</artifactId>
+            <artifactId>demo-ddd-interface</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <!-- dubbo -->
         <dependency>
-            <groupId>org.example</groupId>
-            <artifactId>demo-ddd-application-query</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-spring-boot-starter</artifactId>
+            <version>${dubbo.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.5.1</version>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-dependencies-zookeeper</artifactId>
+            <version>${dubbo.version}</version>
+            <type>pom</type>
         </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.47</version>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.28</version>
-        </dependency>
-
     </dependencies>
 
 </project>
