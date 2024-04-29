@@ -19,6 +19,7 @@
         <module>demo-ddd-main</module>
         <module>demo-ddd-interface</module>
         <module>demo-ddd-application-query</module>
+        <module>demo-spring</module>
     </modules>
     <groupId>com.wanglook01</groupId>
     <artifactId>demo-all</artifactId>
