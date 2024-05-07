@@ -5,6 +5,7 @@ spring:
     username: root
     password: wang1024!
 
+
 mybatis-plus:
   configuration:
     cache-enabled: true
@@ -13,3 +14,5 @@ mybatis-plus:
     use-actual-param-name: true
 server:
   port: 8082
+business:
+  type: 100

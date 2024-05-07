@@ -1,4 +1,4 @@
-package org.example.business.common;
+package org.example.spring.business.common;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;

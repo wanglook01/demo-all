@@ -1,4 +1,4 @@
-package org.example.business.common;
+package org.example.spring.business.common;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@MapperScan(value = {"org.example.business.mapper"})
+@MapperScan(value = {"org.example.spring.business.mapper"})
 public class MybatisPlusConfig {
 
     /**

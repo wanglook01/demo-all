@@ -1,7 +1,7 @@
-package org.example.business;
+package org.example.spring.business;
 
-import org.example.business.common.UserPO;
-import org.example.business.mapper.UserMapper;
+import org.example.spring.business.common.UserPO;
+import org.example.spring.business.mapper.UserMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

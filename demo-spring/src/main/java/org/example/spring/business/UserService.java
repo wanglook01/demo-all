@@ -1,6 +1,6 @@
-package org.example.business;
+package org.example.spring.business;
 
-import org.example.business.common.UserPO;
+import org.example.spring.business.common.UserPO;
 
 public interface UserService {
 
