@@ -5,6 +5,7 @@ import org.example.extra.ProxyService;
 import org.example.extra.SearchService;
 import org.example.spring.anno.*;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Import;
@@ -36,5 +37,6 @@ public class DemoSpringApplication {
         //
         SearchService searchService = context.getBean(SearchService.class);
         System.out.println(searchService.getSearchUrl());
+        //
     }
 }
