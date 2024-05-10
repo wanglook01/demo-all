@@ -3,6 +3,7 @@ package org.example.spring.business.bean;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.*;
+import org.springframework.context.Lifecycle;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -10,7 +11,11 @@ import javax.annotation.PreDestroy;
 
 @Component
 @Slf4j
-public class TagService implements BeanNameAware, BeanFactoryAware, BeanClassLoaderAware, InitializingBean ,DisposableBean{
+public class TagService implements BeanNameAware,
+        BeanFactoryAware,
+        BeanClassLoaderAware,
+        InitializingBean,
+        DisposableBean, Lifecycle {
 
     private ClassLoader classLoader;
     private BeanFactory beanFactory;
@@ -58,5 +63,19 @@ public class TagService implements BeanNameAware, BeanFactoryAware, BeanClassLoa
         log.warn("destroy,preDestroy之后执行");
     }
 
+    @Override
+    public void start() {
+        log.warn("lifeCycle.start......");
+    }
 
+    @Override
+    public void stop() {
+        log.warn("lifeCycle.stop......");
+    }
+
+    @Override
+    public boolean isRunning() {
+        log.warn("lifeCycle.isRunning......");
+        return true;
+    }
 }
