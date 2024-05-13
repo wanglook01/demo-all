@@ -8,10 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 
 @Service
+@Getter
+@Setter
 public class ClassA {
 
-    @Getter
-    @Setter
     private String name;
 
 
