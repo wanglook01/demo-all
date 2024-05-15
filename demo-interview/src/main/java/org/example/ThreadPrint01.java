@@ -121,7 +121,6 @@ public class ThreadPrint01 {
                     }
                     Utils.sleep(1000);
                     System.out.println(Thread.currentThread().getName() + ":" + targetValue);
-                    value
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }

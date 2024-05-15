@@ -1,0 +1,27 @@
+syntax = "proto3";
+//当前proto文件所在的包名，类似于java中的包，但是这个是proto中的包
+package com.protocol;
+
+
+option java_multiple_files = true;
+option java_package = "org.example.protocol";
+
+message GetSkuListResDTOProto {
+  int64 companyId = 1;
+  int32 saleC1Id = 2;
+  int64 biId = 3;
+  int64 skuId = 4;
+
+  // 来源 0:商户添加 1:下单写入
+  int32 source = 5;
+
+  // 注意：Java中的Integer类型在protobuf中通常对应int32，但如果你明确这是用来表示时间戳且可能为null，
+  // 在protobuf中没有直接的null支持，通常我们会用特殊值（如0或负数）来表示"未设置"状态。
+  // 这里假设lastOrderTime和channel非负，如果可以为负，请调整或者明确其含义。
+  int32 lastOrderTime = 6;
+  int32 channel = 7;
+
+  int32 buyNum = 8;
+  int64 uT = 9;
+
+}

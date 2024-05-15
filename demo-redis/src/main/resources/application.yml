@@ -1,0 +1,8 @@
+spring:
+  redis:
+    host: 127.0.0.1
+    lettuce:
+      pool:
+        enabled: true
+        max-active: 8
+    port: 6379
