@@ -22,7 +22,7 @@ public class RedisCacheService {
     private RedisTemplate<String, Object> redisTemplate;
 
     @Resource
-    private RedisTemplate<String, Object> protoRedisTemplate;
+    private RedisTemplate<String, byte[]> protoRedisTemplate;
 
     public String fillIn4(int i) {
         switch ((i + "").length()) {
@@ -52,7 +52,7 @@ public class RedisCacheService {
         Long time = System.currentTimeMillis() / 1000;
         long companyId = 7730000L;
         long skuId = 1239L;
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 50000; i++) {
             companyId += 1;
             skuId += 1;
             String key = CacheKeyUtil.getCompanySkuKey(companyId);
@@ -71,11 +71,11 @@ public class RedisCacheService {
     }
 
     public void saveSkuProto() {
-        ValueOperations<String, Object> protoValueOperations = protoRedisTemplate.opsForValue();
+        ValueOperations<String, byte[]> protoValueOperations = protoRedisTemplate.opsForValue();
         long time = System.currentTimeMillis() / 1000;
         long companyId = 7730000L;
         long skuId = 1239L;
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 50000; i++) {
             companyId += 1;
             skuId += 1;
             String key = CacheKeyUtil.getCompanySkuKey(companyId);
@@ -94,10 +94,12 @@ public class RedisCacheService {
     }
 
     public GetSkuListResDTO get() {
-        ValueOperations<String, Object> opsForValue = protoRedisTemplate.opsForValue();
-        Object o = opsForValue.get("smart_list:7730001");
-        GetSkuListResDTOProto deserialize = ProtoBufUtil.deserialize((byte[]) o, GetSkuListResDTOProto.class);
+        ValueOperations<String, byte[]> opsForValue = protoRedisTemplate.opsForValue();
+        byte[] bytes = opsForValue.get("smart_list:7730001");
+        assert bytes != null;
+        GetSkuListResDTOProto deserialize = ProtoBufUtil.deserialize(bytes, GetSkuListResDTOProto.class);
         GetSkuListResDTO dto = new GetSkuListResDTO();
+        assert deserialize != null;
         dto.setCompanyId(deserialize.getCompanyId());
         dto.setSaleC1Id(deserialize.getSaleC1Id());
         dto.setBiId(deserialize.getBiId());

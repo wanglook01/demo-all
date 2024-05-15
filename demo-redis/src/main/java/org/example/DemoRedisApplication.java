@@ -13,8 +13,8 @@ public class DemoRedisApplication {
         ConfigurableApplicationContext context = SpringApplication.run(DemoRedisApplication.class);
         RedisCacheService redisCacheService = context.getBean(RedisCacheService.class);
         //redisCacheService.save();
-        //redisCacheService.saveSku();
-        redisCacheService.saveSkuProto();
+        redisCacheService.saveSku();
+        //redisCacheService.saveSkuProto();
         System.out.println("success");
         GetSkuListResDTO getSkuListResDTO = redisCacheService.get();
         System.out.println(getSkuListResDTO);
