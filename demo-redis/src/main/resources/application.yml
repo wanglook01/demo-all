@@ -1,8 +1,12 @@
 spring:
   redis:
     host: 127.0.0.1
+    port: 6379
     lettuce:
       pool:
         enabled: true
-        max-active: 8
-    port: 6379
+        max-active: 3
+        min-idle: 0
+        max-idle: 3
+    connect-timeout: 2ms
+    timeout: 3ms
