@@ -21,6 +21,12 @@
         <module>demo-ddd-application-query</module>
         <module>demo-spring</module>
         <module>demo-redis</module>
+        <module>demo-encryption</module>
+        <module>demo-rocketmq</module>
+        <module>demo-rocketmq-2</module>
+        <module>demo-rocketmq-3</module>
+        <module>demo-jdk</module>
+        <module>demo-mock</module>
     </modules>
     <groupId>com.wanglook01</groupId>
     <artifactId>demo-all</artifactId>
