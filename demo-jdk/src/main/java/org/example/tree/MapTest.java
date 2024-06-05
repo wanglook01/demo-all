@@ -1,7 +1,6 @@
 package org.example.tree;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class MapTest {
 

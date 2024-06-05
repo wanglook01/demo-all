@@ -1,12 +1,6 @@
 package org.example;
 
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
-import java.lang.ref.WeakReference;
 import java.util.concurrent.*;
 
 public class ThreadTest {

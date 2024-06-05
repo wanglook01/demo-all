@@ -11,7 +11,6 @@
         <module>demo-cpu</module>
         <module>demo-proxy</module>
         <module>demo-es</module>
-        <module>demo-interview</module>
         <module>demo-ddd-domain</module>
         <module>demo-ddd-application</module>
         <module>demo-ddd-web</module>

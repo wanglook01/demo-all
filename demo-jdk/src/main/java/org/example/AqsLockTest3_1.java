@@ -5,10 +5,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * 先判断，不满足先等待，调换了一下if-else的顺序
- * 2种方法都是对的
+ * conditon等待通知机制的实现
  */
-public class AqsLockTest3_2 {
+public class AqsLockTest3_1 {
 
     public static class NumService {
         Lock lock = new ReentrantLock();
@@ -19,13 +18,14 @@ public class AqsLockTest3_2 {
         public void printOu() {
             try {
                 lock.lock();
-                if (i % 2 != 0) {
-                    System.out.println(Thread.currentThread().getName() + "跳过:" + i);
+                if (i % 2 == 0) {
+                    System.out.println(Thread.currentThread().getName() + ":" + i);
+                    i++;
+                } else {
                     waitJiCondition.signalAll();
                     waitOuCondition.await();
+                    System.out.println(Thread.currentThread().getName() + "跳过:" + i);
                 }
-                System.out.println(Thread.currentThread().getName() + ":" + i);
-                i++;
             } catch (Exception e) {
                 //do nothing
             } finally {
@@ -36,13 +36,14 @@ public class AqsLockTest3_2 {
         public void printJi() {
             try {
                 lock.lock();
-                if (i % 2 != 1) {
-                    System.out.println(Thread.currentThread().getName() + "跳过:" + i);
+                if (i % 2 == 1) {
+                    System.out.println(Thread.currentThread().getName() + ":" + i);
+                    i++;
+                } else {
                     waitOuCondition.signalAll();
                     waitJiCondition.await();
+                    System.out.println(Thread.currentThread().getName() + "跳过:" + i);
                 }
-                System.out.println(Thread.currentThread().getName() + ":" + i);
-                i++;
             } catch (Exception e) {
                 //do nothing
             } finally {
@@ -53,7 +54,7 @@ public class AqsLockTest3_2 {
 
 
     public static void main(String[] args) throws Exception {
-        AqsLockTest3_2.NumService numService = new AqsLockTest3_2.NumService();
+        NumService numService = new NumService();
 
         Thread thread1 = new Thread(() -> {
             for (int i = 0; i < 10; i++) {

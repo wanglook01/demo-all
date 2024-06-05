@@ -54,7 +54,7 @@ public class AqsLockTest3_3 {
 
 
     public static void main(String[] args) throws Exception {
-        AqsLockTest3_3.NumService numService = new AqsLockTest3_3.NumService();
+        NumService numService = new NumService();
 
         Thread thread1 = new Thread(() -> {
             for (int i = 0; i < 10; i++) {
