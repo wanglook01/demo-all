@@ -1,0 +1,23 @@
+
+spring:
+  kafka:
+    bootstrap-servers: localhost:9094,localhost:9095
+    producer:
+      acks: 1
+      batch-size: 16384
+      retries: 1
+      buffer-memory: 33554432
+      #key-serializer: org.apache.kafka.common.serialization.StringSerializer.class
+      #value-serializer: org.apache.kafka.common.serialization.StringSerializer.class
+    consumer:
+      auto-commit-interval: 1S
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      #key-deserializer: org.apache.kafka.common.serialization.StringDeserializer.class
+      #value-deserializer: org.apache.kafka.common.serialization.StringDeserializer.class
+    listener:
+      ack-mode: manual_immediate
+      concurrency: 5
+      missing-topics-fatal: false
+server:
+  port: 8888

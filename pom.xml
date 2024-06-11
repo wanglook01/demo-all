@@ -26,6 +26,7 @@
         <module>demo-rocketmq-3</module>
         <module>demo-jdk</module>
         <module>demo-mock</module>
+        <module>demo-kafka</module>
     </modules>
     <groupId>com.wanglook01</groupId>
     <artifactId>demo-all</artifactId>
