@@ -1,6 +1,0 @@
-rocketmq:
-  name-server: 127.0.0.1:9876;127.0.0.1:9877
-  producer:
-    group: first
-server:
-  port: 8013

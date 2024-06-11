@@ -22,8 +22,6 @@
         <module>demo-redis</module>
         <module>demo-encryption</module>
         <module>demo-rocketmq</module>
-        <module>demo-rocketmq-2</module>
-        <module>demo-rocketmq-3</module>
         <module>demo-jdk</module>
         <module>demo-mock</module>
         <module>demo-kafka</module>
