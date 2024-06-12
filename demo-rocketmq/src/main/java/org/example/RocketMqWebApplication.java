@@ -10,12 +10,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class RocketMqWebApplication {
 
     public static void main(String[] args) throws Exception {
-        ConfigurableApplicationContext context = SpringApplication.run(RocketMqWebApplication.class);
-        DefaultMQProducer producer = context.getBean(DefaultMQProducer.class);
-        for (int i = 0; i < 100; i++) {
-            Message message = new Message("sku_change", "tag", "sku:" + i, ("message-body:" + i).getBytes());
-            producer.send(message);
-        }
-
+        SpringApplication.run(RocketMqWebApplication.class);
     }
 }
