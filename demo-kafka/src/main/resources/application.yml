@@ -5,16 +5,17 @@ spring:
     producer:
       acks: 1
       batch-size: 16384
-      retries: 1
+      retries: 2
       buffer-memory: 33554432
       #key-serializer: org.apache.kafka.common.serialization.StringSerializer.class
       #value-serializer: org.apache.kafka.common.serialization.StringSerializer.class
     consumer:
+      enable-auto-commit: false
       auto-commit-interval: 1S
       auto-offset-reset: earliest
-      enable-auto-commit: false
       #key-deserializer: org.apache.kafka.common.serialization.StringDeserializer.class
       #value-deserializer: org.apache.kafka.common.serialization.StringDeserializer.class
+      group-id: myConsumerGroup
     listener:
       ack-mode: manual_immediate
       concurrency: 5
