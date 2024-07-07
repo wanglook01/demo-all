@@ -3,25 +3,24 @@ package org.example.alg;
 public class Test {
 
     public static void main(String[] args) {
-        System.out.println(isSubsequence("abc","ahbgdc"));
+        //System.out.println(searchInsert(new int[]{1, 3, 5, 6}, 5));
+        System.out.println(Integer.valueOf(200) == Integer.valueOf(200));
+        new Object().equals()
     }
 
-    public static boolean isSubsequence(String s, String t) {
-        int i = 0;
-        int j = 0;
-        while(i < s.length() && j < t.length()){
-            char ci = s.charAt(i);
-            char cj = t.charAt(j);
-            if(ci ==  cj){
-                if(ci==s.length()-1){
-                    return true;
-                }
-                i++;
-                j++;
-            }else{
-                j++;
+    public static int searchInsert(int[] nums, int target) {
+        int left = 0;
+        int right = nums.length - 1;
+        int ans = nums.length;
+        while (left < right) {
+            int mid = (right - left) / 2 + left;
+            if (target <= nums[mid]) {
+                right = mid;
+                ans = mid;
+            } else {
+                left = mid;
             }
         }
-        return false;
+        return ans;
     }
 }

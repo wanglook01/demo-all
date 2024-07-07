@@ -4,5 +4,6 @@ rocketmq:
     group: first
   consumer:
     pull-batch-size: 10
+    group: consumer-group-1
 server:
   port: 8011

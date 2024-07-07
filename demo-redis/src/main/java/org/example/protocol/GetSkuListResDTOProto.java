@@ -481,7 +481,7 @@ private static final long serialVersionUID = 0L;
     }
 
     // Construct using org.example.protocol.GetSkuListResDTOProto.newBuilder()
-    public Builder() {
+    private Builder() {
       maybeForceBuilderInitialization();
     }
 
