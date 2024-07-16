@@ -1,0 +1,52 @@
+Configuration:
+  status: warn
+  monitorInterval: 30
+  name: mallAuthorityLogConfig
+  Properties:
+    Property:
+      - name: log.level.console
+        value: DEBUG
+      - name: log.path
+        value: /data/logs
+      - name: log.default.pattern
+        value: "%d{yyyy-MM-dd HH:mm:ss} %-5p [%t] [%X{URL}::%X{TRACE-ID}] [Line:%3L] [%c{1.}] - %m%n"
+      - name: log.json.pattern
+        value: "%m%n"
+      - name: project.name
+        value: mall-authority
+
+  Appenders:
+    Console:
+      name: CONSOLE
+      target: SYSTEM_OUT
+      PatternLayout:
+        pattern: ${log.default.pattern}
+        #alwaysWriteExceptions: false
+
+    RollingFile:
+      - name: DEFAULT_LOG
+        fileName: ${log.path}/${project.name}/${project.name}.log
+        filePattern: "${log.path}/$${date:yyyy-MM}/${project.name}-%d{yyyy-MM-dd}-%i.log.gz"
+        PatternLayout:
+          pattern: ${log.default.pattern}
+        Policies:
+          CronTriggeringPolicy:
+            schedule: "0 0 3 * * ?"
+            evaluateOnStartup: true
+        DefaultRolloverStrategy:
+          max: 1000
+
+  Loggers:
+    Root:
+      level: INFO
+      includeLocation: true
+      AppenderRef:
+        - ref: CONSOLE
+        - ref: DEFAULT_LOG
+    Logger:
+      - name: RocketmqClient
+        level: 'OFF'
+        includeLocation: true
+      - name: com.sprucetec.mall.entrance.authority.tools.acm
+        level: INFO
+        includeLocation: true
