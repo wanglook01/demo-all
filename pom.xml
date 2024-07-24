@@ -27,6 +27,7 @@
         <module>demo-kafka</module>
         <module>demo-socket</module>
         <module>demo-log</module>
+        <module>demo-localcache</module>
     </modules>
     <groupId>com.wanglook01</groupId>
     <artifactId>demo-all</artifactId>
