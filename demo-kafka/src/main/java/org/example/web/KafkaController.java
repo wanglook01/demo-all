@@ -1,4 +1,4 @@
-package org.example.controller;
+package org.example.web;
 
 
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import java.util.concurrent.ExecutionException;
 
+import static org.example.constant.TopicConst.SKU_SSU_STOCK_CHANGE_TOPIC;
+
 /**
  * http://127.0.0.1:8888/kafka/send/ssu1239stock100
  */
@@ -23,15 +25,13 @@ import java.util.concurrent.ExecutionException;
 @ResponseBody
 public class KafkaController {
 
-    public static String TOPIC = "sku_ssu_stock_change";
-
 
     @Resource
     private KafkaTemplate<String, String> kafkaTemplate;
 
     @RequestMapping("/send/{message}")
     public String sendMessage(@PathVariable String message) throws ExecutionException, InterruptedException {
-        ListenableFuture<SendResult<String, String>> send = kafkaTemplate.send(TOPIC, message);
+        ListenableFuture<SendResult<String, String>> send = kafkaTemplate.send(SKU_SSU_STOCK_CHANGE_TOPIC, message);
         send.addCallback(new ListenableFutureCallback<>() {
             @Override
             public void onFailure(Throwable ex) {

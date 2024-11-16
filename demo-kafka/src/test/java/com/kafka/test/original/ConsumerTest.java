@@ -1,4 +1,4 @@
-package org.example.original;
+package com.kafka.test.original;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -35,6 +35,8 @@ public class ConsumerTest {
                 for (ConsumerRecord<String, String> record : records) {
                     System.out.printf("offset = %d, key = %s, value = %s%n", record.offset(), record.key(), record.value());
                 }
+                consumer.commitAsync();
+                consumer.commitSync();
             }
         } finally {
             // 关闭消费者

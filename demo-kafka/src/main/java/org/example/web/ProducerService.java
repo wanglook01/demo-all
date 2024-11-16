@@ -1,4 +1,4 @@
-package org.example.producer;
+package org.example.web;
 
 
 import lombok.extern.slf4j.Slf4j;

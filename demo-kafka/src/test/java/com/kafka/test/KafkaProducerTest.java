@@ -5,9 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.example.KafkaApplication;
 import org.example.constant.TopicConst;
-import org.example.dto.UserChangeDTO;
-import org.example.producer.ProducerService;
-import org.junit.jupiter.api.BeforeEach;
+import org.example.dto.SkuSsuStockDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -16,41 +14,41 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+/**
+ * sku_ssu_stock_change
+ * 2个分片，2个副本
+ */
 @Slf4j
 @SpringBootTest(classes = KafkaApplication.class)
-public class KafkaTestProducer {
+public class KafkaProducerTest {
 
     @Resource
     private KafkaTemplate<Object, Object> kafkaTemplate;
 
-
-    @Resource
-    private ProducerService producerService;
-
-    static List<UserChangeDTO> userList = new ArrayList<>();
-
-    @BeforeEach
-    public void fill() {
+    public List<SkuSsuStockDTO> getSkuSsuStockList() {
+        List<SkuSsuStockDTO> list = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            UserChangeDTO dto = new UserChangeDTO();
-            dto.setUserId(i);
-            dto.setUserName("user" + i);
-            dto.setPhone(Integer.parseInt("135122888" + i));
-            userList.add(dto);
+            SkuSsuStockDTO dto = new SkuSsuStockDTO();
+            dto.setSkuId("sku-" + i);
+            dto.setSsuId("ssu-" + i);
+            dto.setStock(i * 10);
+            dto.setPrice(new BigDecimal(i * 10));
+            list.add(dto);
         }
+        return list;
     }
 
 
     @Test
     public void userChange() throws Exception {
-        for (UserChangeDTO dto : userList) {
-            String key = dto.getUserName();
+        for (SkuSsuStockDTO dto : getSkuSsuStockList()) {
+            String key = dto.getSkuId();
             String body = JSONObject.toJSONString(dto);
-            ListenableFuture<SendResult<Object, Object>> send = kafkaTemplate.send(TopicConst.USER_CONCURRENTLY_TOPIC, key, body);
+            ListenableFuture<SendResult<Object, Object>> send = kafkaTemplate.send(TopicConst.SKU_SSU_STOCK_CHANGE_TOPIC, key, body);
             send.addCallback(new ListenableFutureCallback<>() {
                 @Override
                 public void onFailure(Throwable ex) {
@@ -66,13 +64,6 @@ public class KafkaTestProducer {
         log.info("send.success1......");
         Thread.sleep(10000);
         log.info("send.success2......");
-    }
-
-
-    @Test
-    public void trx() throws Exception {
-        List<String> list = Arrays.asList("message1", "abc", "message3");
-        producerService.sendInTrx(list);
     }
 
 

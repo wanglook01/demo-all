@@ -52,7 +52,7 @@ public class UserChangeListener {
         log.info("record");
         //手动提交offset
         ack.acknowledge();
-    }*/
+    }
 
     @KafkaListener(topics = TopicConst.USER_CONCURRENTLY_TOPIC,
             groupId = "myConsumerGroup-1",
@@ -65,6 +65,6 @@ public class UserChangeListener {
         log.info("111线程=" + Thread.currentThread().getId() + ", 数据key=" + record.key() + ", 数据value=" + record.value());
         //手动提交offset
         ack.acknowledge();
-    }
+    }*/
 
 }
