@@ -1,14 +1,10 @@
-package org.example.util;
+package org.utils.example;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
-/**
- * @Description: json相关的工具类
- */
 public class JsonUtil {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -30,13 +26,11 @@ public class JsonUtil {
         }
     }
 
-    public static String readString(Object obj) {
+    public static String writeValueAsString(Object obj) {
         try {
             return objectMapper.writeValueAsString(obj);
         } catch (Exception e) {
             throw new RuntimeException("failed read object from json", e);
         }
     }
-
-
 }
